@@ -32,14 +32,6 @@ jQuery( function ( $ ) {
 				redirectBlogData = AcGeoRedirect.siteMap[ 'eu' ];
 			}
 
-			var redirectURL = '';
-			if ( AcGeoRedirect.sku ) {
-				redirectURL = redirectBlogData.url + '/sku/' + AcGeoRedirect.sku + AcGeoRedirect.query_string;
-			}
-			else {
-				redirectURL = redirectBlogData.url + AcGeoRedirect.query_string;
-			}
-
 			var $popup = $( '#ac-geo-popup' ).hide(),
 				$body = $( 'body' );
 
