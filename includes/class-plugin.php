@@ -189,13 +189,15 @@ final class Plugin {
 	public function get_current_blog_data() {
 		$blog_id = (int) get_current_blog_id();
 
-		$code = $this->get_lang_code_from_locale( get_locale(), $blog_id );
+		$locale = multilingual\currentSiteLocale();
+
+		$country_code = $this->get_lang_code_from_locale( $locale, $blog_id );
 
 		return [
 			'id'		=> $blog_id,
 			'domain'	=> $this->remove_protocoll( get_home_url( '' ) ),
-			'lang'		=> $code,
-			'countryCode'	=> $code,
+			'lang'		=> $country_code,
+			'countryCode'	=> $country_code,
 			'locale'	=> get_locale(),
 		];
 	}
@@ -212,10 +214,10 @@ final class Plugin {
 			return null;
 		}
 
-		return strtolower( substr( $locale, -2, 2 ) );
+		return strtolower( @end( ( explode('_', $locale, 2) ) ) );
 	}
 
-	public function get_county_site_map(  ) {
+	public function get_county_site_map() {
 		$multilingual_sites = get_network_option( get_current_network_id(), 'inpsyde_multilingual', [] );
 
 		if ( empty( $multilingual_sites ) ) {
