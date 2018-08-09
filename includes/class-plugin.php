@@ -2,6 +2,7 @@
 
 namespace Ac_Geo_Redirect;
 
+use Inpsyde\MultilingualPress as multilingual;
 /**
  * Class Plugin
  *
@@ -151,8 +152,92 @@ final class Plugin {
 			$this->get_asset_last_modified_time( $this->main_js_file ), // Query string (for cache invalidation)
 			true                                                        // Enquque in footer
 		);
+
+
+		wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
+			//'sku'				=> $this->sku,
+			//'query_string'      => $query_string,
+			'currentBlogData'	=> $this->get_current_blog_data(),
+			'siteMap'			=> $this->get_county_site_map(),
+		]);
 	}
 
+
+	/**
+	 * Get array of data for the current blog.
+	 *
+	 * @return array
+	 */
+	public function get_current_blog_data() {
+		$blog_id = (int) get_current_blog_id();
+
+		$locale = multilingual\currentSiteLocale();
+
+		$country_code = $this->get_lang_code_from_locale( $locale, $blog_id );
+
+		return [
+			'id'		=> $blog_id,
+			'domain'	=> $this->remove_protocoll( get_home_url( '' ) ),
+			'lang'		=> $country_code,
+			'countryCode'	=> $country_code,
+			'locale'	=> get_locale(),
+		];
+	}
+
+	/**
+	 * Get the 2 character lang. code from the locale.
+	 *
+	 * @param null|string $locale Locale.
+	 *
+	 * @return null|string
+	 */
+	protected function get_lang_code_from_locale( $locale = null, $blogg_id = 1 ) {
+		if ( null === $locale ) {
+			return null;
+		}
+
+		return strtolower( @end( ( explode('_', $locale, 2) ) ) );
+	}
+
+	public function get_county_site_map() {
+		$multilingual_sites = get_network_option( get_current_network_id(), 'inpsyde_multilingual', [] );
+
+		if ( empty( $multilingual_sites ) ) {
+			return [];
+		}
+
+		$sites = get_sites();
+
+		$map = [];
+
+		foreach( $sites as $site ) {
+			// Hide draft:wtf domain.
+			$tld = strtolower( substr( $site->domain, strripos( $site->domain, '.' ) + 1 ) );
+			if ( 'wtf' === $tld ) {
+				continue;
+			}
+
+			$blog_data = $this->get_redirect_blog_data( (int) $site->blog_id );
+
+			if( !empty( $blog_data ) ) {
+				$map[$blog_data['countryCode']] = $blog_data;
+			}
+		}
+
+		return $map;
+	}
+
+
+	/**
+	 * Remove the protocoll from a URL.
+	 *
+	 * @param string $url URL.
+	 *
+	 * @return string
+	 */
+	protected function remove_protocoll( $url ) {
+		return preg_replace( '/http(s)?:\/\//', '', $url );
+	}
 	/**
 	 * Register and enqueue stylesheets.
 	 */
