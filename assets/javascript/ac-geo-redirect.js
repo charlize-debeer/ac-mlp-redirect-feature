@@ -44,6 +44,7 @@ jQuery( function ( $ ) {
 				$body = $( 'body' );
 
 			$body.addClass( 'ac-geo-popup-active' );
+			console.log(redirectBlogData)
 
 			$( '.ac-geo-popup-header' ).html( redirectBlogData.t10ns.header + ' ' + redirectBlogData.region + '?' );
 			$( '.ac-geo-popup-sub-header' ).html( redirectBlogData.t10ns.subHeader );
@@ -52,7 +53,7 @@ jQuery( function ( $ ) {
 				src: redirectBlogData.flag,
 			} ) );
 			$( '.ac-geo-popup-redirect-to.redirect-to' ).text( redirectBlogData.t10ns.takeMeTo + ' ' + redirectBlogData.domain );
-			$( '.ac-geo-popup-redirect-link' ).attr( { href: redirectURL } ).data( 'locale', locale );
+			$( '.ac-geo-popup-redirect-link' ).attr( { href: redirectBlogData.url } ).data( 'locale', locale );
 
 			$( '.ac-geo-popup-redirect-flag.remain-flag' ).append( $( '<img />', {
 				src: AcGeoRedirect.currentBlogData.flag,

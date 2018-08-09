@@ -218,10 +218,16 @@ final class Plugin {
 			$assigned_languages[ $press_language->isoCode() ] = [
 				'locale'      => $press_language->locale(),
 				'countryCode' => $press_language->isoCode(),
-				'region'      => '',
+				'region'      => \Locale::getDisplayRegion( $press_language->locale() ),
 				'id'          => $site_id,
 				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
 				'url'         => get_site_url( $site_id ),
+				't10ns'       => get_option( 'agr_option' ) ?: [
+					'header'    => esc_html__( 'Ship to' ),
+					'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.' ),
+					'takeMeTo'  => esc_html__( 'Go to' ),
+					'remainOn'  => esc_html__( 'Stay at' ),
+				],
 			];
 		}
 
