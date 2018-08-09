@@ -14,49 +14,49 @@ final class Plugin {
 	 *
 	 * @var string
 	 */
-	protected const VERSION = '0.0.1';
+	private const VERSION = '0.0.1';
 
 	/**
 	 * Plugin instance.
 	 *
 	 * @var null|self
 	 */
-	protected static $instance = null;
+	private static $instance = null;
 
 	/**
 	 * URL to the plugin.
 	 *
 	 * @var string
 	 */
-	protected $plugin_url;
+	private $plugin_url;
 
 	/**
 	 * Path to the plugin directory.
 	 *
 	 * @var string
 	 */
-	protected $plugin_path;
+	private $plugin_path;
 
 	/**
 	 * Plugin slug (used as ID for the enqueued assets).
 	 *
 	 * @var string
 	 */
-	protected $plugin_slug = 'ac-geo-redirect';
+	private $plugin_slug = 'ac-geo-redirect';
 
 	/**
 	 * The path to the plugin JavaScript file.
 	 *
 	 * @var string
 	 */
-	protected $main_js_file = '/assets/javascript/ac-geo-redirect.js';
+	private $main_js_file = '/assets/javascript/ac-geo-redirect.js';
 
 	/**
 	 * * The path to the plugin CSS file.
 	 *
 	 * @var string
 	 */
-	protected $main_css_file = '/assets/css/ac-geo-redirect.css';
+	private $main_css_file = '/assets/css/ac-geo-redirect.css';
 
 	/**
 	 * Plugin constructor.
@@ -72,18 +72,6 @@ final class Plugin {
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 
-		/**
-         * If you use other hooks, add them here.
-         *
-         * add_action( 'some_action', [ $this, 'do_some_action' ] );
-         */
-
-		/**
-		 * If you have other singletons to load in, do so here.
-		 *
-		 * Options_Page::get_instance();
-		 * Some_Other_Class::get_instance();
-		 */
 	}
 
 	/**
@@ -104,7 +92,7 @@ final class Plugin {
 	 *
 	 * @param string $classname Name of class.
 	 */
-	public function autoload( $classname ) {
+	public function autoload( $classname ) : void {
 		$classname = explode( '\\', $classname );
 		$classfile = sprintf( '%sclass-%s.php',
 			plugin_dir_path( __FILE__ ),
@@ -121,6 +109,8 @@ final class Plugin {
 	 */
 	public function init() {
 		load_plugin_textdomain( $this->plugin_slug, false, basename( $this->plugin_path ) . '/languages/' );
+
+		Redirect::get_instance();
 	}
 
 	/**
@@ -156,24 +146,11 @@ final class Plugin {
 	public function enqueue_scripts() {
 		wp_enqueue_script(
 			$this->plugin_slug . '-script',                             // ID of the script
-			$this->plugin_url . '/' . $this->main_js_file,              // URL to the file
+			$this->plugin_url . $this->main_js_file,              // URL to the file
 			[ 'jquery' ],                                               // JS dependencies
 			$this->get_asset_last_modified_time( $this->main_js_file ), // Query string (for cache invalidation)
 			true                                                        // Enquque in footer
 		);
-
-		/**
-		 * Make PHP variables available to JS.
-		 *
-		 * The JS Namespace can be changed to whatever you need!
-		 */
-
-		/** @var string $namespace The namespace for the JS variables */
-		$namespace = 'Ac_Geo_Redirect';
-
-		wp_localize_script( $this->plugin_slug . '-script', $namespace, [
-			'awesome' => true,
-		]);
 	}
 
 	/**
@@ -182,7 +159,7 @@ final class Plugin {
 	public function enqueue_styles() {
 		wp_enqueue_style(
 			$this->plugin_slug . '-style',                              // ID of the style
-			$this->plugin_url . '/' . $this->main_css_file,             // URL to the file
+			$this->plugin_url . $this->main_css_file,             // URL to the file
 			[],                                                         // CSS dependencies
 			$this->get_asset_last_modified_time( $this->main_css_file ) // Query string (for cache invalidation)
 		);
