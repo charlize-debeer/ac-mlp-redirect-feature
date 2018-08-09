@@ -3,6 +3,7 @@
 namespace Ac_Geo_Redirect;
 
 use Inpsyde\MultilingualPress as multilingual;
+use Ac_Geo_Redirect\AdminSettings;
 
 /**
  * Class Plugin
@@ -113,6 +114,11 @@ final class Plugin {
 		load_plugin_textdomain( $this->plugin_slug, false, basename( $this->plugin_path ) . '/languages/' );
 
 		Redirect::get_instance();
+
+		if ( is_admin() ) {
+			AdminSettings::get_instance();
+		}
+
 	}
 
 	/**
