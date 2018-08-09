@@ -115,13 +115,13 @@ class AdminSettings {
 
 		add_settings_section( 'setting_section', esc_html__( 'AC Geo Redirect Settings', 'ac-geo-redirect' ), [ $this, 'settings_section_callback' ], 'ac_geo_redirect_settings_page' );
 
-		add_settings_field( 'header_text_callback', esc_html__( 'Header:', 'ac-geo-redirect' ), [ $this, 'header_text_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
+		add_settings_field( 'header', esc_html__( 'Header:', 'ac-geo-redirect' ), [ $this, 'header_text_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
 
-		add_settings_field( 'sub_header_text_callback', esc_html__( 'Subheader:', 'ac-geo-redirect' ), [ $this, 'sub_header_text_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
+		add_settings_field( 'subHeader', esc_html__( 'Subheader:', 'ac-geo-redirect' ), [ $this, 'sub_header_text_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
 
-		add_settings_field( 'take_me_to_callback', esc_html__( 'Take me to:', 'ac-geo-redirect' ), [ $this, 'take_me_to_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
+		add_settings_field( 'takeMeTo', esc_html__( 'Take me to:', 'ac-geo-redirect' ), [ $this, 'take_me_to_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
 
-		add_settings_field( 'remain_on_callback', esc_html__( 'Remain on page:', 'ac-geo-redirect' ), [ $this, 'remain_on_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
+		add_settings_field( 'remainOn', esc_html__( 'Remain on page:', 'ac-geo-redirect' ), [ $this, 'remain_on_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
 
 	}
 
@@ -136,28 +136,28 @@ class AdminSettings {
 	 * Close Button Type.
 	 */
 	public function header_text_callback() {
-		echo '<input type="text" id="header_text_callback" name="agr_options[header_text_callback]" value="' . $this->options['header_text_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
+		echo '<input type="text" id="header_text_callback" name="agr_options[header]" value="' . $this->options['header'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
 	}
 
 	/**
 	 * About cookies page field.
 	 */
 	public function sub_header_text_callback() {
-		echo '<input type="text" id="sub_header_text_callback" name="agr_options[sub_header_text_callback]" value="' . $this->options['sub_header_text_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
+		echo '<input type="text" id="sub_header_text_callback" name="agr_options[subHeader]" value="' . $this->options['subHeader'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
 	}
 
 	/**
 	 * Link page field.
 	 */
 	public function take_me_to_callback() {
-		echo '<input type="text" id="take_me_to_callback" name="agr_options[take_me_to_callback]" value="' . $this->options['take_me_to_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
+		echo '<input type="text" id="take_me_to_callback" name="agr_options[takeMeTo]" value="' . $this->options['takeMeTo'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
 	}
 
 	/**
 	 * Link page field.
 	 */
 	public function remain_on_callback() {
-		echo '<input type="text" id="remain_on_callback" name="agr_options[remain_on_callback]" value="' . $this->options['remain_on_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
+		echo '<input type="text" id="remain_on_callback" name="agr_options[remainOn]" value="' . $this->options['remainOn'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
 	}
 
 	/**

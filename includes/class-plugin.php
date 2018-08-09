@@ -222,7 +222,7 @@ final class Plugin {
 				'id'          => $site_id,
 				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
 				'url'         => get_site_url( $site_id ),
-				't10ns'       => get_option( 'agr_option' ) ?: [
+				't10ns'       => get_option( 'agr_options' ) ?: [
 					'header'    => esc_html__( 'Ship to' ),
 					'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.' ),
 					'takeMeTo'  => esc_html__( 'Go to' ),
