@@ -2,6 +2,9 @@
 
 namespace Ac_Geo_Redirect;
 
+use Inpsyde\MultilingualPress as multilingual;
+use Ac_Geo_Redirect\AdminSettings;
+
 /**
  * Class Plugin
  *
@@ -14,49 +17,49 @@ final class Plugin {
 	 *
 	 * @var string
 	 */
-	protected const VERSION = '0.0.1';
+	private const VERSION = '0.0.1';
 
 	/**
 	 * Plugin instance.
 	 *
 	 * @var null|self
 	 */
-	protected static $instance = null;
+	private static $instance = null;
 
 	/**
 	 * URL to the plugin.
 	 *
 	 * @var string
 	 */
-	protected $plugin_url;
+	private $plugin_url;
 
 	/**
 	 * Path to the plugin directory.
 	 *
 	 * @var string
 	 */
-	protected $plugin_path;
+	private $plugin_path;
 
 	/**
 	 * Plugin slug (used as ID for the enqueued assets).
 	 *
 	 * @var string
 	 */
-	protected $plugin_slug = 'ac-geo-redirect';
+	private $plugin_slug = 'ac-geo-redirect';
 
 	/**
 	 * The path to the plugin JavaScript file.
 	 *
 	 * @var string
 	 */
-	protected $main_js_file = '/assets/javascript/ac-geo-redirect.js';
+	private $main_js_file = '/assets/javascript/ac-geo-redirect.js';
 
 	/**
 	 * * The path to the plugin CSS file.
 	 *
 	 * @var string
 	 */
-	protected $main_css_file = '/assets/css/ac-geo-redirect.css';
+	private $main_css_file = '/assets/css/ac-geo-redirect.css';
 
 	/**
 	 * Plugin constructor.
@@ -72,18 +75,6 @@ final class Plugin {
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 
-		/**
-         * If you use other hooks, add them here.
-         *
-         * add_action( 'some_action', [ $this, 'do_some_action' ] );
-         */
-
-		/**
-		 * If you have other singletons to load in, do so here.
-		 *
-		 * Options_Page::get_instance();
-		 * Some_Other_Class::get_instance();
-		 */
 	}
 
 	/**
@@ -104,7 +95,7 @@ final class Plugin {
 	 *
 	 * @param string $classname Name of class.
 	 */
-	public function autoload( $classname ) {
+	public function autoload( $classname ) : void {
 		$classname = explode( '\\', $classname );
 		$classfile = sprintf( '%sclass-%s.php',
 			plugin_dir_path( __FILE__ ),
@@ -121,6 +112,13 @@ final class Plugin {
 	 */
 	public function init() {
 		load_plugin_textdomain( $this->plugin_slug, false, basename( $this->plugin_path ) . '/languages/' );
+
+		Redirect::get_instance();
+
+		if ( is_admin() ) {
+			AdminSettings::get_instance();
+		}
+
 	}
 
 	/**
@@ -156,24 +154,152 @@ final class Plugin {
 	public function enqueue_scripts() {
 		wp_enqueue_script(
 			$this->plugin_slug . '-script',                             // ID of the script
-			$this->plugin_url . '/' . $this->main_js_file,              // URL to the file
+			$this->plugin_url . $this->main_js_file,              // URL to the file
 			[ 'jquery' ],                                               // JS dependencies
 			$this->get_asset_last_modified_time( $this->main_js_file ), // Query string (for cache invalidation)
 			true                                                        // Enquque in footer
 		);
 
-		/**
-		 * Make PHP variables available to JS.
-		 *
-		 * The JS Namespace can be changed to whatever you need!
-		 */
+		wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
+			//'sku'				=> $this->sku,
+			//'query_string'      => $query_string,
+			'currentBlogData' => $this->get_current_blog_data(),
+			'siteMap'         => $this->get_assigned_languages(),
+		] );
+	}
 
-		/** @var string $namespace The namespace for the JS variables */
-		$namespace = 'Ac_Geo_Redirect';
+	/**
+	 * Get array of data for the current blog.
+	 *
+	 * @return array
+	 */
+	public function get_current_blog_data() {
+		$blog_id = (int) get_current_blog_id();
 
-		wp_localize_script( $this->plugin_slug . '-script', $namespace, [
-			'awesome' => true,
-		]);
+		$locale = multilingual\currentSiteLocale();
+
+		$country_code = $this->get_lang_code_from_locale( $locale, $blog_id );
+
+		return [
+			'id'          => $blog_id,
+			'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
+			'lang'        => $country_code,
+			'countryCode' => $country_code,
+			'locale'      => $locale,
+		];
+	}
+
+	/**
+	 * Get the 2 character lang. code from the locale.
+	 *
+	 * @param null|string $locale Locale.
+	 *
+	 * @return null|string
+	 */
+	protected function get_lang_code_from_locale( $locale = null, $blogg_id = 1 ) {
+		if ( null === $locale ) {
+			return null;
+		}
+
+		return strtolower( @end( ( explode( '_', $locale, 2 ) ) ) );
+	}
+
+	/**
+	 * Get the current list of that site assigned.
+	 */
+	public function get_assigned_languages() {
+		return $this->_simple_assigned_languages();
+	}
+
+	protected function _simple_assigned_languages() {
+		$assigned_languages = [];
+
+		foreach ( multilingual\assignedLanguages() as $site_id => $press_language ) {
+			$assigned_languages[ $this->get_lang_code_from_locale( $press_language->locale() ) ] = [
+				'locale'      => $press_language->locale(),
+				'countryCode' => $this->get_lang_code_from_locale( $press_language->locale() ),
+				'region'      => \Locale::getDisplayRegion( $press_language->locale() ),
+				'id'          => $site_id,
+				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
+				'url'         => get_site_url( $site_id ),
+				't10ns'       => get_option( 'agr_options' ) ?: [
+					'header'    => esc_html__( 'Ship to' ),
+					'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.' ),
+					'takeMeTo'  => esc_html__( 'Go to' ),
+					'remainOn'  => esc_html__( 'Stay at' ),
+				],
+			];
+		}
+
+		return $assigned_languages;
+	}
+
+	public function get_county_site_map() {
+
+		if ( ! is_multisite() ) {
+			return [];
+		}
+
+		$sites = get_sites();
+
+		$map = [];
+
+		foreach ( $sites as $site ) {
+			// Hide draft:wtf domain.
+			$tld = strtolower( substr( $site->domain, strripos( $site->domain, '.' ) + 1 ) );
+			if ( 'wtf' === $tld ) {
+				continue;
+			}
+
+			$blog_data = $this->get_redirect_blog_data( (int) $site->blog_id );
+
+			if ( ! empty( $blog_data ) ) {
+				$map[ $blog_data['countryCode'] ] = $blog_data;
+			}
+		}
+
+		return $map;
+	}
+
+	/**
+	 * Get the redirect Blog data.
+	 *
+	 * @return array.
+	 */
+	public function get_redirect_blog_data( $blog_id ) : array {
+
+		var_dump( multilingual\assignedLanguageTags() );
+
+		return [
+			'locale'      => $locale,
+			'countryCode' => $country_code,
+			'region'      => $region,
+			'id'          => $blog_id,
+			'domain'      => $this->remove_protocoll( get_site_url( $blog_id, '' ) ),
+			'url'         => get_site_url( $blog_id ),
+		];
+	}
+
+	/**
+	 * Get the blog ID from a country code.
+	 *
+	 * @param string $country_code The 2 character country code.
+	 *
+	 * @return bool|int
+	 */
+	protected function get_blog_id_from_country_code( $country_code = '' ) {
+
+	}
+
+	/**
+	 * Remove the protocoll from a URL.
+	 *
+	 * @param string $url URL.
+	 *
+	 * @return string
+	 */
+	protected function remove_protocoll( $url ) {
+		return preg_replace( '/http(s)?:\/\//', '', $url );
 	}
 
 	/**
@@ -182,7 +308,7 @@ final class Plugin {
 	public function enqueue_styles() {
 		wp_enqueue_style(
 			$this->plugin_slug . '-style',                              // ID of the style
-			$this->plugin_url . '/' . $this->main_css_file,             // URL to the file
+			$this->plugin_url . $this->main_css_file,             // URL to the file
 			[],                                                         // CSS dependencies
 			$this->get_asset_last_modified_time( $this->main_css_file ) // Query string (for cache invalidation)
 		);
