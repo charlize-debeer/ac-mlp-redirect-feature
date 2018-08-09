@@ -3,6 +3,7 @@
 namespace Ac_Geo_Redirect;
 
 use Inpsyde\MultilingualPress as multilingual;
+
 /**
  * Class Plugin
  *
@@ -153,15 +154,13 @@ final class Plugin {
 			true                                                        // Enquque in footer
 		);
 
-
 		wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
 			//'sku'				=> $this->sku,
 			//'query_string'      => $query_string,
-			'currentBlogData'	=> $this->get_current_blog_data(),
-			'siteMap'			=> $this->get_county_site_map(),
-		]);
+			'currentBlogData' => $this->get_current_blog_data(),
+			'siteMap'         => $this->get_assigned_languages(),
+		] );
 	}
-
 
 	/**
 	 * Get array of data for the current blog.
@@ -176,11 +175,11 @@ final class Plugin {
 		$country_code = $this->get_lang_code_from_locale( $locale, $blog_id );
 
 		return [
-			'id'		=> $blog_id,
-			'domain'	=> $this->remove_protocoll( get_home_url( '' ) ),
-			'lang'		=> $country_code,
-			'countryCode'	=> $country_code,
-			'locale'	=> get_locale(),
+			'id'          => $blog_id,
+			'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
+			'lang'        => $country_code,
+			'countryCode' => $country_code,
+			'locale'      => $locale,
 		];
 	}
 
@@ -196,13 +195,36 @@ final class Plugin {
 			return null;
 		}
 
-		return strtolower( @end( ( explode('_', $locale, 2) ) ) );
+		return strtolower( @end( ( explode( '_', $locale, 2 ) ) ) );
+	}
+
+	/**
+	 * Get the current list of that site assigned.
+	 */
+	public function get_assigned_languages() {
+		return $this->_simple_assigned_languages();
+	}
+
+	protected function _simple_assigned_languages() {
+		$assigned_languages = [];
+
+		foreach ( multilingual\assignedLanguages() as $site_id => $press_language ) {
+			$assigned_languages[ $press_language->isoCode() ] = [
+				'locale'      => $press_language->locale(),
+				'countryCode' => $press_language->isoCode(),
+				'region'      => '',
+				'id'          => $site_id,
+				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
+				'url'         => get_site_url( $site_id ),
+			];
+		}
+
+		return $assigned_languages;
 	}
 
 	public function get_county_site_map() {
-		$multilingual_sites = get_network_option( get_current_network_id(), 'inpsyde_multilingual', [] );
 
-		if ( empty( $multilingual_sites ) ) {
+		if ( ! is_multisite() ) {
 			return [];
 		}
 
@@ -210,7 +232,7 @@ final class Plugin {
 
 		$map = [];
 
-		foreach( $sites as $site ) {
+		foreach ( $sites as $site ) {
 			// Hide draft:wtf domain.
 			$tld = strtolower( substr( $site->domain, strripos( $site->domain, '.' ) + 1 ) );
 			if ( 'wtf' === $tld ) {
@@ -219,14 +241,43 @@ final class Plugin {
 
 			$blog_data = $this->get_redirect_blog_data( (int) $site->blog_id );
 
-			if( !empty( $blog_data ) ) {
-				$map[$blog_data['countryCode']] = $blog_data;
+			if ( ! empty( $blog_data ) ) {
+				$map[ $blog_data['countryCode'] ] = $blog_data;
 			}
 		}
 
 		return $map;
 	}
 
+	/**
+	 * Get the redirect Blog data.
+	 *
+	 * @return array.
+	 */
+	public function get_redirect_blog_data( $blog_id ) : array {
+
+		var_dump( multilingual\assignedLanguageTags() );
+
+		return [
+			'locale'      => $locale,
+			'countryCode' => $country_code,
+			'region'      => $region,
+			'id'          => $blog_id,
+			'domain'      => $this->remove_protocoll( get_site_url( $blog_id, '' ) ),
+			'url'         => get_site_url( $blog_id ),
+		];
+	}
+
+	/**
+	 * Get the blog ID from a country code.
+	 *
+	 * @param string $country_code The 2 character country code.
+	 *
+	 * @return bool|int
+	 */
+	protected function get_blog_id_from_country_code( $country_code = '' ) {
+
+	}
 
 	/**
 	 * Remove the protocoll from a URL.
@@ -238,6 +289,7 @@ final class Plugin {
 	protected function remove_protocoll( $url ) {
 		return preg_replace( '/http(s)?:\/\//', '', $url );
 	}
+
 	/**
 	 * Register and enqueue stylesheets.
 	 */

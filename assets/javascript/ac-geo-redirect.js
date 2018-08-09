@@ -2,14 +2,14 @@ jQuery( function ( $ ) {
 
 	/** Add a flag to empty cookies, so that the client can test this */
 	if ( window.location.search.indexOf( 'empty_cookies' ) > -1 || window.location.search.indexOf( 'faux_country_code' ) > -1 ) {
-		// console.log( 'Clearing cookies!' );
+		console.log( 'Clearing cookies!' );
 		document.cookie.split( ';' ).forEach( function ( c ) {
 			document.cookie = c.replace( /^ +/, '' ).replace( /=.*/, '=;expires=' + new Date().toUTCString() + ';path=/' );
 		} );
 	}
 
 	if ( document.cookie.indexOf( 'visited=' ) > -1 ) {
-		// console.log( 'Cookie is already set.' );
+		console.log( 'Cookie is already set.' );
 
 	}
 	else if ( window.location.search.indexOf( 'no_geo_redirect' ) > -1 ) {
@@ -22,7 +22,7 @@ jQuery( function ( $ ) {
 		var locale = AcGeoRedirectLocale.toLowerCase();
 		// var locale = 'eu';
 		var redirectBlogData = {};
-
+		console.log(AcGeoRedirect)
 		if ( locale !== AcGeoRedirect.currentBlogData.countryCode && !locale.includes( 'esi:include' ) && !locale.includes( 'null' ) ) {
 
 			if ( AcGeoRedirect.siteMap.hasOwnProperty( locale ) ) {
