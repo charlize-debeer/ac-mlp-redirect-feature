@@ -39,8 +39,8 @@ class AdminSettings {
 	 * AdminBase constructor.
 	 */
 	public function __construct() {
-		register_setting( 'ac_geo_redirect_settings_page', 'ac_geo_redirect', [ $this, 'agr_validate_options' ] );
 
+		register_setting( 'ac_geo_redirect_settings_page', 'agr_options', [ $this, 'agr_validate_options' ] );
 		add_action( 'admin_init', [ $this, 'cookies_initialize_setting_section_options' ] );
 		add_action( 'admin_menu', [ $this, 'setting_section_menu' ] );
 		$this->options = get_option( 'agr_options' );
@@ -51,7 +51,7 @@ class AdminSettings {
 	 * Callback section.
 	 */
 	public function get_section() {
-		settings_fields( 'setting_section' );
+		settings_fields( 'ac_geo_redirect_settings_page' );
 		do_settings_sections( 'ac_geo_redirect_settings_page' );
 	}
 
@@ -136,28 +136,28 @@ class AdminSettings {
 	 * Close Button Type.
 	 */
 	public function header_text_callback() {
-		echo '<input type="text" id="header_text_callback" name="agr_options[header_text_callback]" value="' . $this->options['setting_section']['header_text_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
+		echo '<input type="text" id="header_text_callback" name="agr_options[header_text_callback]" value="' . $this->options['header_text_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
 	}
 
 	/**
 	 * About cookies page field.
 	 */
 	public function sub_header_text_callback() {
-		echo '<input type="text" id="sub_header_text_callback" name="agr_options[sub_header_text_callback]" value="' . $this->options['setting_section']['sub_header_text_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
+		echo '<input type="text" id="sub_header_text_callback" name="agr_options[sub_header_text_callback]" value="' . $this->options['sub_header_text_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
 	}
 
 	/**
 	 * Link page field.
 	 */
 	public function take_me_to_callback() {
-		echo '<input type="text" id="take_me_to_callback" name="agr_options[take_me_to_callback]" value="' . $this->options['setting_section']['take_me_to_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
+		echo '<input type="text" id="take_me_to_callback" name="agr_options[take_me_to_callback]" value="' . $this->options['take_me_to_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
 	}
 
 	/**
 	 * Link page field.
 	 */
 	public function remain_on_callback() {
-		echo '<input type="text" id="remain_on_callback" name="agr_options[remain_on_callback]" value="' . $this->options['setting_section']['remain_on_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
+		echo '<input type="text" id="remain_on_callback" name="agr_options[remain_on_callback]" value="' . $this->options['remain_on_callback'] . '" placeholder="' . esc_html__( 'Write text here', 'ac-geo-redirect' ) . '" class="form-input-tip ui-autocomplete-input regular-text ltr" role="combobox" aria-autocomplete="list" aria-expanded="false" />'; // WPCS: XSS ok.
 	}
 
 	/**
