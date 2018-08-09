@@ -215,9 +215,9 @@ final class Plugin {
 		$assigned_languages = [];
 
 		foreach ( multilingual\assignedLanguages() as $site_id => $press_language ) {
-			$assigned_languages[ $press_language->isoCode() ] = [
+			$assigned_languages[ $this->get_lang_code_from_locale( $press_language->locale() ) ] = [
 				'locale'      => $press_language->locale(),
-				'countryCode' => $press_language->isoCode(),
+				'countryCode' => $this->get_lang_code_from_locale( $press_language->locale() ),
 				'region'      => \Locale::getDisplayRegion( $press_language->locale() ),
 				'id'          => $site_id,
 				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
