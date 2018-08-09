@@ -1,0 +1,116 @@
+.ac-geo-popup {
+    display: none;
+}
+
+.ac-geo-popup-active .ac-geo-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    -ms-overflow-style: -ms-autohiding-scrollbar; /* IE/Edge scrollbar fix */
+}
+
+.ac-geo-popup-active .ac-geo-popup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ac-geo-popup-inner {
+    text-align: center;
+    padding: 10px 30px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 100%;
+    margin: 0 auto;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.ac-geo-popup-inner-text a {
+    text-decoration: none;
+}
+
+.ac-geo-popup .ac-geo-popup-sub-header-wrapper {
+    margin-top: 8px;
+    margin-bottom: 23px;
+}
+
+.ac-geo-popup .ac-geo-popup-sub-header {
+    width: 295px;
+    height: 44px;
+    font-size: 16px;
+    font-style: italic;
+    line-height: 1.38;
+    text-align: center;
+    color: #666666;
+}
+
+.ac-geo-popup .ac-geo-popup-inner {
+    width: 335px;
+    height: 300px;
+    border-radius: 2px;
+    background-color: #ffffff;
+    padding: 29px 20px 30px 20px;
+}
+
+.ac-geo-popup .ac-geo-popup-header {
+    width: 295px;
+    height: 26px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.62;
+    margin: 0;
+    letter-spacing: normal;
+    text-align: center;
+    color: #3a3a3a;
+}
+
+.ac-geo-popup .ac-geo-popup-redirect {
+    width: 295px;
+    height: 60px;
+    border-radius: 2px;
+    border: solid 1px #e5e5e5;
+    margin-bottom: 20px;
+}
+
+.ac-geo-popup .ac-geo-popup-redirect:last-child {
+    margin-bottom: 0;
+}
+
+.ac-geo-popup .ac-geo-popup-redirect a {
+    display: -webkit-flex; /* Safari */
+    -webkit-align-items: center; /* Safari 7.0+ */
+    display: flex;
+    align-items: center;
+    padding: 14px 15px 14px 15px;
+}
+
+.ac-geo-popup .ac-geo-popup-redirect-flag {
+    margin-right: 9px;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    display: inline-block;
+}
+
+.ac-geo-popup .redirect-to,
+.ac-geo-popup .remain-on {
+    height: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.29;
+    text-align: left;
+    color: #2a2a2a;
+    vertical-align: middle;
+}
+
+.ac-geo-popup .redirect-to {
+    font-weight: 600;
+}
