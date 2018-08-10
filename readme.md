@@ -6,7 +6,8 @@ This is a plugin to make geo redirect happen when visiting a site and a site in 
 
 1. Install Multilingualpress 3.
 2. Install Ac Geo Redirect
-3. :heart: that's it
+3. The settings for the popup is found under Settings->Ac Geo Redirect
+4. :heart: that's it
 
 **OBS!** Ac Geo Redirect plugin is dependent on Multilingualpress 3.
 
