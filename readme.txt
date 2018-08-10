@@ -1,6 +1,6 @@
 === AC Plugin Boilerplate ===
 Contributors: angrycreative
-Tags: WordPress, WooCommerce
+Tags: WordPress, multilingualpress
 Requires at least: 4.8
 Tested up to: 4.8
 Stable tag: 0.0.1
