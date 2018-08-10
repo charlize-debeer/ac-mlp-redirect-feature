@@ -1,15 +1,14 @@
-# AC Plugin Boilerplate V2
+# AC Geo Redirect
 
-This is a suggested form for the new plugin boilerplate. 
+This is a plugin to make geo redirect happen when visiting a site and a site in your country exists
 
 ## How to
 
-1. Clone this repository and `cd` into it
-2. Run `composer install`
-3. Run `php ./installer/installer.php plugin:create` and follow the prompts
-4. :heart: that's it
+1. Install Multilingualpress 3.
+2. Install Ac Geo Redirect
+3. :heart: that's it
 
-**OBS!** The install script will rename the directory you cloned the project into. So don't get confused after you run the script!
+**OBS!** Ac Geo Redirect plugin is dependent on Multilingualpress 3.
 
 ### Tests
 
