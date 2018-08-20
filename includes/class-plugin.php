@@ -3,7 +3,6 @@
 namespace Ac_Geo_Redirect;
 
 use Inpsyde\MultilingualPress as multilingual;
-use Ac_Geo_Redirect\AdminSettings;
 
 /**
  * Class Plugin
@@ -118,7 +117,6 @@ final class Plugin {
 		if ( is_admin() ) {
 			AdminSettings::get_instance();
 		}
-
 	}
 
 	/**
@@ -153,32 +151,31 @@ final class Plugin {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script(
-			$this->plugin_slug . '-script',                             // ID of the script
-			$this->plugin_url . $this->main_js_file,              // URL to the file
-			[ 'jquery' ],                                               // JS dependencies
-			$this->get_asset_last_modified_time( $this->main_js_file ), // Query string (for cache invalidation)
-			true                                                        // Enquque in footer
+			$this->plugin_slug . '-script',
+			$this->plugin_url . $this->main_js_file,
+			[ 'jquery' ],
+			$this->get_asset_last_modified_time( $this->main_js_file ),
+			true
 		);
 
 		wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
-			//'sku'				=> $this->sku,
-			//'query_string'      => $query_string,
 			'currentBlogData' => $this->get_current_blog_data(),
 			'siteMap'         => $this->get_assigned_languages(),
+			'defaultLocale'   => apply_filters( 'ac_geo_redirect_default_locale', 'us' ),
+			'redirectLocale'  => Redirect::get_instance()->get_locale(),
 		] );
 	}
 
 	/**
 	 * Get array of data for the current blog.
-	 *
+
 	 * @return array
+	 * @throws multilingual\Framework\Database\Exception\NonexistentTable
 	 */
-	public function get_current_blog_data() {
-		$blog_id = (int) get_current_blog_id();
-
-		$locale = multilingual\currentSiteLocale();
-
-		$country_code = $this->get_lang_code_from_locale( $locale, $blog_id );
+	public function get_current_blog_data() : array {
+		$blog_id      = (int) get_current_blog_id();
+		$locale       = multilingual\currentSiteLocale();
+		$country_code = $this->get_lang_code_from_locale( $locale );
 
 		return [
 			'id'          => $blog_id,
@@ -196,22 +193,19 @@ final class Plugin {
 	 *
 	 * @return null|string
 	 */
-	protected function get_lang_code_from_locale( $locale = null, $blogg_id = 1 ) {
+	protected function get_lang_code_from_locale( $locale = null ) {
 		if ( null === $locale ) {
 			return null;
 		}
 
-		return strtolower( @end( ( explode( '_', $locale, 2 ) ) ) );
+		$locale = explode( '_', $locale, 2 );
+		return strtolower( end( $locale ) );
 	}
 
 	/**
 	 * Get the current list of that site assigned.
 	 */
-	public function get_assigned_languages() {
-		return $this->_simple_assigned_languages();
-	}
-
-	protected function _simple_assigned_languages() {
+	protected function get_assigned_languages() : array {
 		$assigned_languages = [];
 
 		foreach ( multilingual\assignedLanguages() as $site_id => $press_language ) {
@@ -223,72 +217,15 @@ final class Plugin {
 				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
 				'url'         => get_site_url( $site_id ),
 				't10ns'       => get_option( 'agr_options' ) ?: [
-					'header'    => esc_html__( 'Ship to' ),
-					'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.' ),
-					'takeMeTo'  => esc_html__( 'Go to' ),
-					'remainOn'  => esc_html__( 'Stay at' ),
+					'header'    => esc_html__( 'Ship to', 'ac-geo-redirect' ),
+					'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.', 'ac-geo-redirect' ),
+					'takeMeTo'  => esc_html__( 'Go to', 'ac-geo-redirect' ),
+					'remainOn'  => esc_html__( 'Stay at', 'ac-geo-redirect' ),
 				],
 			];
 		}
 
-		return $assigned_languages;
-	}
-
-	public function get_county_site_map() {
-
-		if ( ! is_multisite() ) {
-			return [];
-		}
-
-		$sites = get_sites();
-
-		$map = [];
-
-		foreach ( $sites as $site ) {
-			// Hide draft:wtf domain.
-			$tld = strtolower( substr( $site->domain, strripos( $site->domain, '.' ) + 1 ) );
-			if ( 'wtf' === $tld ) {
-				continue;
-			}
-
-			$blog_data = $this->get_redirect_blog_data( (int) $site->blog_id );
-
-			if ( ! empty( $blog_data ) ) {
-				$map[ $blog_data['countryCode'] ] = $blog_data;
-			}
-		}
-
-		return $map;
-	}
-
-	/**
-	 * Get the redirect Blog data.
-	 *
-	 * @return array.
-	 */
-	public function get_redirect_blog_data( $blog_id ) : array {
-
-		var_dump( multilingual\assignedLanguageTags() );
-
-		return [
-			'locale'      => $locale,
-			'countryCode' => $country_code,
-			'region'      => $region,
-			'id'          => $blog_id,
-			'domain'      => $this->remove_protocoll( get_site_url( $blog_id, '' ) ),
-			'url'         => get_site_url( $blog_id ),
-		];
-	}
-
-	/**
-	 * Get the blog ID from a country code.
-	 *
-	 * @param string $country_code The 2 character country code.
-	 *
-	 * @return bool|int
-	 */
-	protected function get_blog_id_from_country_code( $country_code = '' ) {
-
+		return apply_filters( 'ac_geo_redirect_assigned_languages', $assigned_languages );
 	}
 
 	/**
@@ -307,10 +244,10 @@ final class Plugin {
 	 */
 	public function enqueue_styles() {
 		wp_enqueue_style(
-			$this->plugin_slug . '-style',                              // ID of the style
-			$this->plugin_url . $this->main_css_file,             // URL to the file
-			[],                                                         // CSS dependencies
-			$this->get_asset_last_modified_time( $this->main_css_file ) // Query string (for cache invalidation)
+			$this->plugin_slug . '-style',
+			$this->plugin_url . $this->main_css_file,
+			[],
+			$this->get_asset_last_modified_time( $this->main_css_file )
 		);
 	}
 

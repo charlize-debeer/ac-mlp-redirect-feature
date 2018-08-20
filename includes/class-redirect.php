@@ -7,8 +7,6 @@
 
 namespace Ac_Geo_Redirect;
 
-use Inpsyde\MultilingualPress as multilingual;
-
 /**
  * Class Plugin
  *
@@ -24,14 +22,18 @@ class Redirect extends BasePlugin {
 	protected static $instance;
 
 	/**
+	 * @var array
+	 */
+	protected $headers = [];
+
+	/**
 	 * Redirect constructor.
 	 */
 	public function __construct() {
 		parent::__construct();
 
-		add_action( 'wp_enqueue_scripts', [ $this, 'output_esi_locale' ], 20 );
+		$this->set_headers();
 		add_action( 'wp_footer', [ $this, 'add_popup' ] );
-
 	}
 
 	/**
@@ -48,18 +50,28 @@ class Redirect extends BasePlugin {
 	}
 
 	/**
-	 * Output ESI Locale. (Header: X-Ac-Debug-Country-Code) if set.
-	 *
-	 * @return void
+	 * Get the headers!
 	 */
-	public function output_esi_locale() : void {
-		$debug_country_code = $this->get_debug_country_code() ?: '<esi:include src="/esi/geoip_country"/>';
-		?>
-		<script type='text/javascript'>
-					var AcGeoRedirectLocale = '<?php echo $debug_country_code; ?>';
-		</script>
-		<?php
+	protected function set_headers() : void {
+		if ( ! function_exists( 'apache_request_headers' ) ) {
+			return;
+		}
 
+		$headers = [];
+		foreach ( apache_request_headers() as $key => $value ) {
+			$headers[ strtolower( $key ) ] = $value;
+		}
+
+		$this->headers = $headers;
+	}
+
+	/**
+	 * Output Locale if the headers are set.
+	 *
+	 * @return string
+	 */
+	public function get_locale() :? string {
+		return $this->get_debug_country_code() ?: $this->get_country_code();
 	}
 
 	/**
@@ -67,10 +79,11 @@ class Redirect extends BasePlugin {
 	 *
 	 * @param string $template_name Template name.
 	 */
-	public function get_template( $template_name = 'popup.php' ) {
+	public function get_template( $template_name = 'popup.php' ) : void {
 		$located = $this->locate_template( $template_name );
+
 		if ( ! file_exists( $located ) ) {
-			_doing_it_wrong( __FUNCTION__, sprintf( ' < code>%s </code > does not exist . ', esc_html( $located ) ), esc_html( self::VERSION ) );
+			_doing_it_wrong( __FUNCTION__, sprintf( ' <code>%s </code> does not exist . ', esc_html( $located ) ), esc_html( self::VERSION ) );
 
 			return;
 		}
@@ -85,7 +98,8 @@ class Redirect extends BasePlugin {
 	 *
 	 * @return string
 	 */
-	public function locate_template( $template_name ) : string {
+	public function locate_template( string $template_name ) : string {
+		$template_name = apply_filters( 'ac_geo_redirect_template_name', $template_name );
 		$template_path = $this->plugin_path . ' / ';
 		$default_path  = $this->plugin_path . '/templates';
 		$template      = locate_template(
@@ -94,11 +108,12 @@ class Redirect extends BasePlugin {
 				$template_name,
 			]
 		);
+
 		if ( ! $template ) {
 			$template = $default_path . '/' . $template_name;
 		}
 
-		return apply_filters( 'ac_geo_redirect', $template, $template_name, $template_path );
+		return apply_filters( 'ac_geo_redirect_template', $template, $template_name, $template_path );
 	}
 
 	/**
@@ -109,16 +124,39 @@ class Redirect extends BasePlugin {
 	}
 
 	/**
+	 * @return null|string
+	 */
+	protected function get_country_code() :? string {
+		$header = ( defined( 'AC_GEO_REDIRECT_HEADER' ) ) ? AC_GEO_REDIRECT_HEADER : 'x-geoip-country';
+		$header = strtolower( apply_filters( 'ac_geo_redirect_header', $header ) );
+		$code   = $this->get_header( $header );
+
+		if ( ! $code ) {
+			$header = 'cf-ipcountry';
+			$code   = $this->get_header( $header );
+		}
+
+		$code = apply_filters( 'ac_geo_redirect_visitor_country_code', $code );
+
+		return ( $code ) ? strtolower( $code ) : null;
+	}
+
+	/**
+	 * @param string $header
+	 *
+	 * @return null|string
+	 */
+	protected function get_header( string $header ) :? string {
+		return ( ! empty( $this->headers[ $header ] ) ) ? $this->headers[ $header ] : null;
+	}
+
+	/**
 	 * Get the debug country code. (Header: HTTP_X_AC_DEBUG_COUNTRY_CODE) if set.
 	 *
 	 * @return string
 	 */
-	protected function get_debug_country_code() : string {
-		if ( ! empty( $_SERVER['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) ) {
-			return strtoupper( $_SERVER['HTTP_X_AC_DEBUG_COUNTRY_CODE'] );
-		}
-
-		return false;
+	protected function get_debug_country_code() :? string {
+		return ( ! empty( $this->headers['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) ) ? strtolower( $this->headers['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) : null;
 	}
 
 }
