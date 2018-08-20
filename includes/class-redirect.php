@@ -22,13 +22,18 @@ class Redirect extends BasePlugin {
 	protected static $instance;
 
 	/**
+	 * @var array
+	 */
+	protected $headers = [];
+
+	/**
 	 * Redirect constructor.
 	 */
 	public function __construct() {
 		parent::__construct();
 
+		$this->set_headers();
 		add_action( 'wp_footer', [ $this, 'add_popup' ] );
-
 	}
 
 	/**
@@ -42,6 +47,22 @@ class Redirect extends BasePlugin {
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Get the headers!
+	 */
+	protected function set_headers() : void {
+		if ( ! function_exists( 'apache_request_headers' ) ) {
+			return;
+		}
+
+		$headers = [];
+		foreach ( apache_request_headers() as $key => $value ) {
+			$headers[ strtolower( $key ) ] = $value;
+		}
+
+		$this->$headers = $headers;
 	}
 
 	/**
@@ -107,12 +128,12 @@ class Redirect extends BasePlugin {
 	 * @return null|string
 	 */
 	protected function get_country_code() :? string {
-		$header = ( defined( 'AC_GEO_REDIRECT_HEADER' ) ) ? AC_GEO_REDIRECT_HEADER : 'X-GeoIP-Country';
-		$header = apply_filters( 'ac_geo_redirect_header', $header );
+		$header = ( defined( 'AC_GEO_REDIRECT_HEADER' ) ) ? AC_GEO_REDIRECT_HEADER : 'x-geoip-country';
+		$header = strtolower( apply_filters( 'ac_geo_redirect_header', $header ) );
+		$code   = $this->get_header( $header );
 
-		$code = $this->get_header( $header );
 		if ( ! $code ) {
-			$header = 'CF-IPCountry';
+			$header = 'cf-ipcountry';
 			$code   = $this->get_header( $header );
 		}
 
@@ -127,7 +148,7 @@ class Redirect extends BasePlugin {
 	 * @return null|string
 	 */
 	protected function get_header( string $header ) :? string {
-		return ( ! empty( $_SERVER[ $header ] ) ) ? $_SERVER[ $header ] : null;
+		return ( ! empty( $this->headers[ $header ] ) ) ? $this->headers[ $header ] : null;
 	}
 
 	/**
@@ -136,7 +157,7 @@ class Redirect extends BasePlugin {
 	 * @return string
 	 */
 	protected function get_debug_country_code() :? string {
-		return ( ! empty( $_SERVER['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) ) ? strtolower( $_SERVER['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) : null;
+		return ( ! empty( $this->headers['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) ) ? strtolower( $this->headers['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) : null;
 	}
 
 }
