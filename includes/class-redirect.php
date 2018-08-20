@@ -62,7 +62,7 @@ class Redirect extends BasePlugin {
 			$headers[ strtolower( $key ) ] = $value;
 		}
 
-		$this->$headers = $headers;
+		$this->headers = $headers;
 	}
 
 	/**
