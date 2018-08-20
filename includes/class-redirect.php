@@ -113,7 +113,6 @@ class Redirect extends BasePlugin {
 			$template = $default_path . '/' . $template_name;
 		}
 
-
 		return apply_filters( 'ac_geo_redirect_template', $template, $template_name, $template_path );
 	}
 
