@@ -1,15 +1,19 @@
 # AC Geo Redirect
 
-This is a plugin to make geo redirect happen when visiting a site and a site in your country exists
+This is a plugin to make geo redirect happen when visiting a site and a site in your country exists.
+
+In order for this plugin to work, the correct headers _must_ be sent. These will either be: `x-geoip-country` for NGINX or `cf-ipcountry` for Cloudflare.
+
+**You must ask Toni to configure the headers for the site in order for this plugin to work at all!!!** 
 
 ## How to
 
 1. Install Multilingualpress 3.
-2. Install Ac Geo Redirect
-3. The settings for the popup is found under Settings->Ac Geo Redirect
+2. Install this plugin
+3. The settings for the popup are found under Settings->Ac Geo Redirect
 4. :heart: that's it
 
-**OBS!** Ac Geo Redirect plugin is dependent on Multilingualpress 3.
+**OBS!** Ac Geo Redirect plugin is dependent on Multilingualpress 3 which is not currently available. Ask Samuel for help in acquiring a copy! 
 
 ### Tests
 
