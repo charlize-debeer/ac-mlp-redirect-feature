@@ -239,10 +239,11 @@ final class Plugin {
 	protected function get_assigned_languages() : array {
 		try {
 			$assigned_languages = [];
+			$locale = MultilingualPress\currentSiteLocale();
 
 			foreach ( MultiLingualPress\assignedLanguages() as $site_id => $press_language ) {
 				$lng_code = $this->get_lang_code_from_locale( $press_language->locale() );
-				$region = \Locale::getDisplayRegion( $press_language->locale() );
+				$region = \Locale::getDisplayRegion( $press_language->locale(), $locale );
 
 				$assigned_languages[ $lng_code ] = [
 					'locale'      => $press_language->locale(),
