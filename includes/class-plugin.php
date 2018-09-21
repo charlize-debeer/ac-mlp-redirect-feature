@@ -2,7 +2,7 @@
 
 namespace Ac_Geo_Redirect;
 
-use Inpsyde\MultilingualPress as multilingual;
+use Inpsyde\MultilingualPress;
 
 /**
  * Class Plugin
@@ -147,7 +147,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Register and enqueue scripts.
+	 * Enqueue the scripts
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script(
@@ -158,32 +158,46 @@ final class Plugin {
 			true
 		);
 
-		wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
-			'currentBlogData' => $this->get_current_blog_data(),
-			'siteMap'         => $this->get_assigned_languages(),
-			'defaultLocale'   => apply_filters( 'ac_geo_redirect_default_locale', 'us' ),
-			'redirectLocale'  => Redirect::get_instance()->get_locale(),
-		] );
+		try {
+			wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
+				'currentBlogData' => $this->get_current_blog_data(),
+				'siteMap'         => $this->get_assigned_languages(),
+				'defaultLocale'   => apply_filters( 'ac_geo_redirect_default_locale', 'us' ),
+				'redirectLocale'  => Redirect::get_instance()->get_locale(),
+			] );
+		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
+			add_action( 'admin_notices', function() use ( $e ) {
+				?>
+				<div class="notice notice-error is-dismissible">
+					<p><?php echo esc_html( $e->getMessage() ); ?></p>
+				</div>
+				<?php
+			} );
+		}
 	}
 
 	/**
 	 * Get array of data for the current blog.
 
 	 * @return array
-	 * @throws multilingual\Framework\Database\Exception\NonexistentTable
+	 * @throws MultilingualPress\Framework\Database\Exception\NonexistentTable
 	 */
 	public function get_current_blog_data() : array {
-		$blog_id      = (int) get_current_blog_id();
-		$locale       = multilingual\currentSiteLocale();
-		$country_code = $this->get_lang_code_from_locale( $locale );
+		try {
+			$locale   = MultilingualPress\currentSiteLocale();
+			$lng_code = $this->get_lang_code_from_locale( $locale );
 
-		return [
-			'id'          => $blog_id,
-			'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
-			'lang'        => $country_code,
-			'countryCode' => $country_code,
-			'locale'      => $locale,
-		];
+			return apply_filters( 'ac_geo_redirect_current_blog_data', [
+				'id'          => (int) get_current_blog_id(),
+				'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
+				'lang'        => $lng_code,
+				'flag'        => apply_filters( "ac_geo_redirect_{$lng_code}_flag", $this->plugin_url . '/assets/flags/' . $lng_code . '.svg' ),
+				'countryCode' => $lng_code,
+				'locale'      => $locale,
+			] );
+		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
+			throw $e;
+		}
 	}
 
 	/**
@@ -203,29 +217,36 @@ final class Plugin {
 	}
 
 	/**
-	 * Get the current list of that site assigned.
+	 * @return array
+	 * @throws MultilingualPress\Framework\Database\Exception\NonexistentTable
 	 */
 	protected function get_assigned_languages() : array {
-		$assigned_languages = [];
+		try {
+			$assigned_languages = [];
+			foreach ( MultiLingualPress\assignedLanguages() as $site_id => $press_language ) {
+				$lng_code = $this->get_lang_code_from_locale( $press_language->locale() );
 
-		foreach ( multilingual\assignedLanguages() as $site_id => $press_language ) {
-			$assigned_languages[ $this->get_lang_code_from_locale( $press_language->locale() ) ] = [
-				'locale'      => $press_language->locale(),
-				'countryCode' => $this->get_lang_code_from_locale( $press_language->locale() ),
-				'region'      => \Locale::getDisplayRegion( $press_language->locale() ),
-				'id'          => $site_id,
-				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
-				'url'         => get_site_url( $site_id ),
-				't10ns'       => get_option( 'agr_options' ) ?: [
-					'header'    => esc_html__( 'Ship to', 'ac-geo-redirect' ),
-					'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.', 'ac-geo-redirect' ),
-					'takeMeTo'  => esc_html__( 'Go to', 'ac-geo-redirect' ),
-					'remainOn'  => esc_html__( 'Stay at', 'ac-geo-redirect' ),
-				],
-			];
+				$assigned_languages[ $lng_code ] = [
+					'locale'      => $press_language->locale(),
+					'countryCode' => $lng_code,
+					'region'      => \Locale::getDisplayRegion( $press_language->locale() ),
+					'id'          => $site_id,
+					'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
+					'url'         => get_site_url( $site_id ),
+					'flag'        => apply_filters( "ac_geo_redirect_{$lng_code}_flag", $this->plugin_url . '/assets/flags/' . $lng_code . '.svg' ),
+					't10ns'       => get_option( 'agr_options' ) ?: [
+						'header'    => esc_html__( 'Ship to', 'ac-geo-redirect' ),
+						'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.', 'ac-geo-redirect' ),
+						'takeMeTo'  => esc_html__( 'Go to', 'ac-geo-redirect' ),
+						'remainOn'  => esc_html__( 'Stay at', 'ac-geo-redirect' ),
+					],
+				];
+			}
+
+			return apply_filters( 'ac_geo_redirect_assigned_languages', $assigned_languages );
+		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
+			throw $e;
 		}
-
-		return apply_filters( 'ac_geo_redirect_assigned_languages', $assigned_languages );
 	}
 
 	/**
