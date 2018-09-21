@@ -22,14 +22,18 @@
 
 .ac-geo-popup-inner {
     text-align: center;
-    padding: 10px 30px;
-    width: 100%;
-    max-width: 700px;
+    width: 95%;
+    max-width: 380px;
     max-height: 100%;
     margin: 0 auto;
     overflow-y: auto;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, .95);
+    box-shadow: 0 0 2px rgba(0, 0, 0, .2);
+}
+@media (min-width: 768px) {
+    .ac-geo-popup-inner {
+        max-width: 440px;
+    }
 }
 
 .ac-geo-popup-inner-text a {
@@ -41,42 +45,45 @@
     margin-bottom: 23px;
 }
 
-.ac-geo-popup .ac-geo-popup-sub-header {
-    width: 295px;
-    height: 44px;
-    font-size: 16px;
-    font-style: italic;
-    line-height: 1.38;
-    text-align: center;
-    color: #666666;
-}
-
 .ac-geo-popup .ac-geo-popup-inner {
-    width: 335px;
-    height: 300px;
     border-radius: 2px;
     background-color: #ffffff;
-    padding: 29px 20px 30px 20px;
+    padding: 40px 30px 50px;
+}
+@media (min-width: 768px) {
+    .ac-geo-popup .ac-geo-popup-inner {
+        padding: 80px 70px;
+    }
+}
+
+.ac-geo-popup .ac-geo-popup-icon {
+    width: 40px;
+}
+@media (min-width: 768px) {
+    .ac-geo-popup .ac-geo-popup-icon {
+        width: 50px;
+    }
 }
 
 .ac-geo-popup .ac-geo-popup-header {
-    width: 295px;
-    height: 26px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
-    line-height: 1.62;
-    margin: 0;
-    letter-spacing: normal;
+    line-height: 28px;
+    margin: 20px 0;
     text-align: center;
     color: #3a3a3a;
 }
+@media (min-width: 768px) {
+    .ac-geo-popup .ac-geo-popup-header {
+        font-size: 24px;
+        line-height: 32px;
+        margin-bottom: 40px;
+    }
+}
 
 .ac-geo-popup .ac-geo-popup-redirect {
-    width: 295px;
-    height: 60px;
-    border-radius: 2px;
-    border: solid 1px #e5e5e5;
-    margin-bottom: 20px;
+    margin: 0 auto 15px;
+    text-align: center;
 }
 
 .ac-geo-popup .ac-geo-popup-redirect:last-child {
@@ -84,30 +91,37 @@
 }
 
 .ac-geo-popup .ac-geo-popup-redirect a {
-    display: -webkit-flex; /* Safari */
-    -webkit-align-items: center; /* Safari 7.0+ */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 15px 14px 15px;
+    padding: 12px;
+    border-radius: 2px;
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1px;
+    border: solid 1px #e5e5e5;
+    text-transform: uppercase;
+}
+@media (min-width: 768px) {
+    .ac-geo-popup .ac-geo-popup-redirect a {
+        font-size: 13px;
+    }
 }
 
-.ac-geo-popup .ac-geo-popup-redirect-flag img {
-    width: 40px;
+.ac-geo-popup .ac-geo-popup-redirect a:hover {
+    text-decoration: none;
+}
+
+a.ac-geo-popup-remain-link,
+a.ac-geo-popup-remain-link:hover {
+    color: #5483bf;
+}
+
+.ac-geo-popup a.ac-geo-popup-redirect-link {
+    background: #5483bf;
+    color: white;
 }
 
 .ac-geo-popup .redirect-to,
 .ac-geo-popup .remain-on {
-    height: 18px;
     white-space: nowrap;
     overflow: hidden;
-    font-size: 14px;
-    line-height: 1.29;
-    text-align: left;
-    color: #2a2a2a;
     vertical-align: middle;
-}
-
-.ac-geo-popup .redirect-to {
-    font-weight: 600;
 }

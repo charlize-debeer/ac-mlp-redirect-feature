@@ -49,24 +49,15 @@ jQuery( function ( $ ) {
 
 		$body.addClass( 'ac-geo-popup-active' );
 
-		$( '.ac-geo-popup-header' ).html( redirectBlogData.t10ns.header + ' ' + redirectBlogData.region + '?' );
-		$( '.ac-geo-popup-sub-header' ).html( redirectBlogData.t10ns.subHeader );
+		let region = redirectBlogData.region;
+		if ( 'United States' === region ) {
+			region = 'the ' + region;
+		}
 
+		$( '.ac-geo-popup-header' ).html( redirectBlogData.t10ns.header + ' ' + region );
 		$( '.ac-geo-popup-redirect-to.redirect-to' ).text( redirectBlogData.t10ns.takeMeTo + ' ' + redirectBlogData.domain );
 		$( '.ac-geo-popup-redirect-link' ).attr( { href: redirectBlogData.url + '?no_geo_redirect=1' } ).data( 'locale', locale );
 		$( '.ac-geo-popup-redirect-to.remain-on' ).text( redirectBlogData.t10ns.remainOn + ' ' + AcGeoRedirect.currentBlogData.domain );
-
-		if (redirectBlogData.flag) {
-			$( '.ac-geo-popup-redirect-flag.redirect-flag' ).append( $( '<img />', {
-				src: redirectBlogData.flag,
-			} ) );
-		}
-
-		if (AcGeoRedirect.currentBlogData.flag) {
-			$( '.ac-geo-popup-redirect-flag.remain-flag' ).append( $( '<img />', {
-				src: AcGeoRedirect.currentBlogData.flag,
-			} ) );
-		}
 
 		$popup.fadeIn( 400 );
 
@@ -77,7 +68,7 @@ jQuery( function ( $ ) {
 
 				$popup.fadeOut( 200, function () {
 					$body.removeClass( 'ac-geo-popup-active' );
-					} );
+				} );
 			} );
 	}
 

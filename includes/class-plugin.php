@@ -16,7 +16,7 @@ final class Plugin {
 	 *
 	 * @var string
 	 */
-	private const VERSION = '0.0.1';
+	private const VERSION = '1.0.0';
 
 	/**
 	 * Plugin instance.
@@ -207,9 +207,9 @@ final class Plugin {
 				'id'          => (int) get_current_blog_id(),
 				'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
 				'lang'        => $lng_code,
-				'flag'        => apply_filters( "ac_geo_redirect_{$lng_code}_flag", $this->plugin_url . '/assets/flags/' . $lng_code . '.svg' ),
 				'countryCode' => $lng_code,
 				'locale'      => $locale,
+				'region'      => \Locale::getDisplayRegion( $locale ),
 			] );
 		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
 			throw $e;
@@ -239,20 +239,20 @@ final class Plugin {
 	protected function get_assigned_languages() : array {
 		try {
 			$assigned_languages = [];
+
 			foreach ( MultiLingualPress\assignedLanguages() as $site_id => $press_language ) {
 				$lng_code = $this->get_lang_code_from_locale( $press_language->locale() );
+				$region = \Locale::getDisplayRegion( $press_language->locale() );
 
 				$assigned_languages[ $lng_code ] = [
 					'locale'      => $press_language->locale(),
 					'countryCode' => $lng_code,
-					'region'      => \Locale::getDisplayRegion( $press_language->locale() ),
+					'region'      => $region,
 					'id'          => $site_id,
 					'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
 					'url'         => get_site_url( $site_id ),
-					'flag'        => apply_filters( "ac_geo_redirect_{$lng_code}_flag", $this->plugin_url . '/assets/flags/' . $lng_code . '.svg' ),
 					't10ns'       => get_option( 'agr_options' ) ?: [
-						'header'    => esc_html__( 'Ship to', 'ac-geo-redirect' ),
-						'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.', 'ac-geo-redirect' ),
+						'header'    => esc_html__( "Hi! It seems like you're in", 'ac-geo-redirect' ),
 						'takeMeTo'  => esc_html__( 'Go to', 'ac-geo-redirect' ),
 						'remainOn'  => esc_html__( 'Stay at', 'ac-geo-redirect' ),
 					],

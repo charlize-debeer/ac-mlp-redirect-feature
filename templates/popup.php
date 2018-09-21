@@ -16,23 +16,20 @@
 			<section>
 
 				<header>
+					<img class="ac-geo-popup-icon" src="<?php echo esc_url( \Ac_Geo_Redirect\Plugin::get_instance()->get_url() ); ?>/assets/images/map.svg" alt="Map Icon">
+
 					<h3 class="ac-geo-popup-header"></h3>
-					<p class="ac-geo-popup-sub-header-wrapper"><span class="ac-geo-popup-sub-header"></span></p>
 				</header>
 
 				<div class="ac-geo-popup-redirect">
 					<a href="#" class="ac-geo-popup-redirect-link">
 						<div class="ac-geo-popup-redirect-to redirect-to"></div>
-
-						<div class="ac-geo-popup-redirect-flag redirect-flag"></div>
 					</a>
 				</div>
 
 				<div class="ac-geo-popup-redirect">
 					<a href="#" class="ac-geo-popup-remain-link">
 						<div class="ac-geo-popup-redirect-to remain-on"></div>
-
-						<div class="ac-geo-popup-redirect-flag remain-flag"></div>
 					</a>
 				</div>
 
