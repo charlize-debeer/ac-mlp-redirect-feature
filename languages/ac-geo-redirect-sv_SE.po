@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: AC Geo Redirect\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-09-21 14:32+0000\n"
+"PO-Revision-Date: 2018-09-21 14:33+0000\n"
+"Last-Translator: angrycreative <malin.kylegard@angrycreative.se>\n"
+"Language-Team: Svenska\n"
+"Language: sv_SE\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/"
+
+#: includes/class-plugin.php:255
+msgid "Hi! It seems like you're in"
+msgstr "Hej! Vi tror att du befinner dig i"
+
+#: includes/class-plugin.php:256
+msgid "Go to"
+msgstr "Gå till"
+
+#: includes/class-plugin.php:257
+msgid "Stay at"
+msgstr "Stanna på"
+
+#: includes/class-adminsettings.php:107
+msgid "AC Geo Redirect Settings"
+msgstr "AC Geo Redirect inställningar"
+
+#: includes/class-adminsettings.php:109
+msgid "Header:"
+msgstr "Rubrik: "
+
+#: includes/class-adminsettings.php:110
+msgid "Take me to:"
+msgstr "Ta mig till:"
+
+#: includes/class-adminsettings.php:111
+msgid "Remain on page:"
+msgstr "Stanna på sida:"
+
+#: includes/class-adminsettings.php:124 includes/class-adminsettings.php:131
+#: includes/class-adminsettings.php:138 includes/class-adminsettings.php:145
+msgid "Write text here"
+msgstr ""
+
+#. Name of the plugin
+msgid "AC Geo Redirect"
+msgstr ""
+
+#. Description of the plugin
+msgid "A GEO IP plugin for use with MultilingualPress V.3."
+msgstr ""
+
+#. URI of the plugin
+#. Author URI of the plugin
+msgid "https://angrycreative.se"
+msgstr ""
+
+#. Author of the plugin
+msgid "Angry Creatives"
+msgstr ""
