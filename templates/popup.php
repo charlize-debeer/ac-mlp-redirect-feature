@@ -24,9 +24,7 @@
 					<a href="#" class="ac-geo-popup-redirect-link">
 						<div class="ac-geo-popup-redirect-to redirect-to"></div>
 
-						<div class="ac-geo-popup-redirect-flag">
-							<div class="redirect-flag"></div>
-						</div>
+						<div class="ac-geo-popup-redirect-flag redirect-flag"></div>
 					</a>
 				</div>
 
@@ -34,9 +32,7 @@
 					<a href="#" class="ac-geo-popup-remain-link">
 						<div class="ac-geo-popup-redirect-to remain-on"></div>
 
-						<div class="ac-geo-popup-redirect-flag">
-							<div class="remain-flag"></div>
-						</div>
+						<div class="ac-geo-popup-redirect-flag remain-flag"></div>
 					</a>
 				</div>
 
