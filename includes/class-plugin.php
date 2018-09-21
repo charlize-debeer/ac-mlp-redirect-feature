@@ -2,7 +2,7 @@
 
 namespace Ac_Geo_Redirect;
 
-use Inpsyde\MultilingualPress as multilingual;
+use Inpsyde\MultilingualPress;
 
 /**
  * Class Plugin
@@ -16,7 +16,7 @@ final class Plugin {
 	 *
 	 * @var string
 	 */
-	private const VERSION = '0.0.1';
+	private const VERSION = '1.0.0';
 
 	/**
 	 * Plugin instance.
@@ -73,7 +73,6 @@ final class Plugin {
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-
 	}
 
 	/**
@@ -87,6 +86,17 @@ final class Plugin {
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Show a notice is MLP V.3 is not active on the site.
+	 */
+	public function show_mlp_required_notice() : void {
+		?>
+		<div class="notice notice-error is-dismissible">
+			<p><?php echo esc_html_e( 'MultilingualPress V.3 is a depenency of the AC Geo Redirect plugin. Please make sure it\'s installed and activated.' ); ?></p>
+		</div>
+		<?php
 	}
 
 	/**
@@ -109,7 +119,13 @@ final class Plugin {
 	/**
 	 * Add translations. You can call other hooks here.
 	 */
-	public function init() {
+	public function init() : void {
+		if ( ! function_exists( 'Inpsyde\MultilingualPress\currentSiteLocale' ) ) {
+			add_action( 'network_admin_notices', [ $this, 'show_mlp_required_notice' ] );
+			add_action( 'admin_notices', [ $this, 'show_mlp_required_notice' ] );
+			return;
+		}
+
 		load_plugin_textdomain( $this->plugin_slug, false, basename( $this->plugin_path ) . '/languages/' );
 
 		Redirect::get_instance();
@@ -147,9 +163,9 @@ final class Plugin {
 	}
 
 	/**
-	 * Register and enqueue scripts.
+	 * Enqueue the scripts
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts() : void {
 		wp_enqueue_script(
 			$this->plugin_slug . '-script',
 			$this->plugin_url . $this->main_js_file,
@@ -158,32 +174,46 @@ final class Plugin {
 			true
 		);
 
-		wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
-			'currentBlogData' => $this->get_current_blog_data(),
-			'siteMap'         => $this->get_assigned_languages(),
-			'defaultLocale'   => apply_filters( 'ac_geo_redirect_default_locale', 'us' ),
-			'redirectLocale'  => Redirect::get_instance()->get_locale(),
-		] );
+		try {
+			wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
+				'currentBlogData' => $this->get_current_blog_data(),
+				'siteMap'         => $this->get_assigned_languages(),
+				'defaultLocale'   => apply_filters( 'ac_geo_redirect_default_locale', 'us' ),
+				'redirectLocale'  => Redirect::get_instance()->get_locale(),
+			] );
+		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
+			add_action( 'admin_notices', function() use ( $e ) {
+				?>
+				<div class="notice notice-error is-dismissible">
+					<p><?php echo esc_html( $e->getMessage() ); ?></p>
+				</div>
+				<?php
+			} );
+		}
 	}
 
 	/**
 	 * Get array of data for the current blog.
 
 	 * @return array
-	 * @throws multilingual\Framework\Database\Exception\NonexistentTable
+	 * @throws MultilingualPress\Framework\Database\Exception\NonexistentTable
 	 */
 	public function get_current_blog_data() : array {
-		$blog_id      = (int) get_current_blog_id();
-		$locale       = multilingual\currentSiteLocale();
-		$country_code = $this->get_lang_code_from_locale( $locale );
+		try {
+			$locale   = MultilingualPress\currentSiteLocale();
+			$lng_code = $this->get_lang_code_from_locale( $locale );
 
-		return [
-			'id'          => $blog_id,
-			'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
-			'lang'        => $country_code,
-			'countryCode' => $country_code,
-			'locale'      => $locale,
-		];
+			return apply_filters( 'ac_geo_redirect_current_blog_data', [
+				'id'          => (int) get_current_blog_id(),
+				'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
+				'lang'        => $lng_code,
+				'countryCode' => $lng_code,
+				'locale'      => $locale,
+				'region'      => \Locale::getDisplayRegion( $locale ),
+			] );
+		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
+			throw $e;
+		}
 	}
 
 	/**
@@ -193,7 +223,7 @@ final class Plugin {
 	 *
 	 * @return null|string
 	 */
-	protected function get_lang_code_from_locale( $locale = null ) {
+	protected function get_lang_code_from_locale( string $locale = null ) :? string {
 		if ( null === $locale ) {
 			return null;
 		}
@@ -203,29 +233,36 @@ final class Plugin {
 	}
 
 	/**
-	 * Get the current list of that site assigned.
+	 * @return array
+	 * @throws MultilingualPress\Framework\Database\Exception\NonexistentTable
 	 */
 	protected function get_assigned_languages() : array {
-		$assigned_languages = [];
+		try {
+			$assigned_languages = [];
 
-		foreach ( multilingual\assignedLanguages() as $site_id => $press_language ) {
-			$assigned_languages[ $this->get_lang_code_from_locale( $press_language->locale() ) ] = [
-				'locale'      => $press_language->locale(),
-				'countryCode' => $this->get_lang_code_from_locale( $press_language->locale() ),
-				'region'      => \Locale::getDisplayRegion( $press_language->locale() ),
-				'id'          => $site_id,
-				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
-				'url'         => get_site_url( $site_id ),
-				't10ns'       => get_option( 'agr_options' ) ?: [
-					'header'    => esc_html__( 'Ship to', 'ac-geo-redirect' ),
-					'subHeader' => esc_html__( 'Please select the region for where you want your purchases shipped.', 'ac-geo-redirect' ),
-					'takeMeTo'  => esc_html__( 'Go to', 'ac-geo-redirect' ),
-					'remainOn'  => esc_html__( 'Stay at', 'ac-geo-redirect' ),
-				],
-			];
+			foreach ( MultiLingualPress\assignedLanguages() as $site_id => $press_language ) {
+				$lng_code = $this->get_lang_code_from_locale( $press_language->locale() );
+				$region = \Locale::getDisplayRegion( $press_language->locale() );
+
+				$assigned_languages[ $lng_code ] = [
+					'locale'      => $press_language->locale(),
+					'countryCode' => $lng_code,
+					'region'      => $region,
+					'id'          => $site_id,
+					'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
+					'url'         => get_site_url( $site_id ),
+					't10ns'       => get_option( 'agr_options' ) ?: [
+						'header'    => esc_html__( "Hi! It seems like you're in", 'ac-geo-redirect' ),
+						'takeMeTo'  => esc_html__( 'Go to', 'ac-geo-redirect' ),
+						'remainOn'  => esc_html__( 'Stay at', 'ac-geo-redirect' ),
+					],
+				];
+			}
+
+			return apply_filters( 'ac_geo_redirect_assigned_languages', $assigned_languages );
+		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
+			throw $e;
 		}
-
-		return apply_filters( 'ac_geo_redirect_assigned_languages', $assigned_languages );
 	}
 
 	/**
@@ -235,14 +272,14 @@ final class Plugin {
 	 *
 	 * @return string
 	 */
-	protected function remove_protocoll( $url ) {
+	protected function remove_protocoll( string $url ) : string {
 		return preg_replace( '/http(s)?:\/\//', '', $url );
 	}
 
 	/**
 	 * Register and enqueue stylesheets.
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles() : void {
 		wp_enqueue_style(
 			$this->plugin_slug . '-style',
 			$this->plugin_url . $this->main_css_file,
@@ -261,7 +298,7 @@ final class Plugin {
 	 *
 	 * @return string
 	 */
-	protected function get_asset_last_modified_time( $relative_path ) : string {
+	protected function get_asset_last_modified_time( string $relative_path ) : string {
 		return date( 'YmdHi', filemtime( $this->plugin_path . $relative_path ) );
 	}
 

@@ -107,7 +107,6 @@ class AdminSettings {
 		add_settings_section( 'setting_section', esc_html__( 'AC Geo Redirect Settings', 'ac-geo-redirect' ), [ $this, 'settings_section_callback' ], 'ac_geo_redirect_settings_page' );
 
 		add_settings_field( 'header', esc_html__( 'Header:', 'ac-geo-redirect' ), [ $this, 'header_text_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
-		add_settings_field( 'subHeader', esc_html__( 'Subheader:', 'ac-geo-redirect' ), [ $this, 'sub_header_text_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
 		add_settings_field( 'takeMeTo', esc_html__( 'Take me to:', 'ac-geo-redirect' ), [ $this, 'take_me_to_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
 		add_settings_field( 'remainOn', esc_html__( 'Remain on page:', 'ac-geo-redirect' ), [ $this, 'remain_on_callback' ], 'ac_geo_redirect_settings_page', 'setting_section' );
 	}

@@ -1,34 +1,40 @@
 jQuery( function ( $ ) {
 
-	// Bail if local storage doesn't exist.
+	/** @type {string} The local storage key */
+	var localStorageKey = 'ac_geo_visited';
+
+	// If local storage doesn't exist, bail.
 	if ( ! acGeoRedirectLocalstorageExists() ) {
 		return;
 	}
 
-	/** @type {string} The local storage key */
-	var localStorageKey = 'ac_geo_visited';
-
 	/** Add a flag to empty cookies, so that the client can test this */
-	if ( window.location.search.indexOf( 'empty_cookies' ) > -1 || window.location.search.indexOf( 'faux_country_code' ) > -1 ) {
+	if ( window.location.search.indexOf( 'empty_cookies' ) > -1 ) {
 		localStorage.removeItem( localStorageKey );
 	}
 
+	/** If the user has been redicred here, set the cookie and bail */
 	if ( window.location.search.indexOf( 'no_geo_redirect' ) > -1 ) {
 		acGeoRedirectSetCookie();
 		return;
 	}
 
+	/** If the user has the cookie, bail */
 	if ( acGeoRedirectHasCookie() ) {
 		return;
 	}
 
-
 	var locale = AcGeoRedirect.redirectLocale;
-	var redirectBlogData;
+	var redirectBlogData = null;
 
-	if ( locale !== AcGeoRedirect.currentBlogData.countryCode && !locale.includes( 'null' ) ) {
-		var $popup = $( '#ac-geo-popup' ).hide(),
-			$body = $( 'body' ),
+	if (!locale) {
+		console.log('AcGeoRedirect.redirectLocale not set. (See class-redirect.php).', 'Did you add the debug header (http_x_ac_debug_country_code) or are the headers setup correctly for NGINX or cloudflare?', 'See the readme for more info');
+		return;
+	}
+
+	if ( locale !== AcGeoRedirect.currentBlogData.countryCode ) {
+		var $popup      = $( '#ac-geo-popup' ).hide(),
+			$body       = $( 'body' ),
 			$remainLink = $( '.ac-geo-popup-remain-link' );
 
 		if ( AcGeoRedirect.siteMap.hasOwnProperty( locale ) ) {
@@ -43,31 +49,27 @@ jQuery( function ( $ ) {
 
 		$body.addClass( 'ac-geo-popup-active' );
 
-		$( '.ac-geo-popup-header' ).html( redirectBlogData.t10ns.header + ' ' + redirectBlogData.region + '?' );
-		$( '.ac-geo-popup-sub-header' ).html( redirectBlogData.t10ns.subHeader );
+		let region = redirectBlogData.region;
+		if ( 'United States' === region ) {
+			region = 'the ' + region;
+		}
 
-		$( '.ac-geo-popup-redirect-flag.redirect-flag' ).append( $( '<img />', {
-			src: redirectBlogData.flag,
-		} ) );
+		$( '.ac-geo-popup-header' ).html( redirectBlogData.t10ns.header + ' ' + region );
 		$( '.ac-geo-popup-redirect-to.redirect-to' ).text( redirectBlogData.t10ns.takeMeTo + ' ' + redirectBlogData.domain );
 		$( '.ac-geo-popup-redirect-link' ).attr( { href: redirectBlogData.url + '?no_geo_redirect=1' } ).data( 'locale', locale );
-
-		$( '.ac-geo-popup-redirect-flag.remain-flag' ).append( $( '<img />', {
-			src: AcGeoRedirect.currentBlogData.flag,
-		} ) );
 		$( '.ac-geo-popup-redirect-to.remain-on' ).text( redirectBlogData.t10ns.remainOn + ' ' + AcGeoRedirect.currentBlogData.domain );
-		$remainLink.data( 'locale', AcGeoRedirect.currentBlogData.countryCode );
 
 		$popup.fadeIn( 400 );
 
-		$remainLink.on( 'click', function ( e ) {
-			e.preventDefault();
-			acGeoRedirectSetCookie();
+		$remainLink.data( 'locale', AcGeoRedirect.currentBlogData.countryCode )
+			.on( 'click', function ( e ) {
+				e.preventDefault();
+				acGeoRedirectSetCookie();
 
-			$popup.fadeOut( 200, function () {
-				$body.removeClass( 'ac-geo-popup-active' );
+				$popup.fadeOut( 200, function () {
+					$body.removeClass( 'ac-geo-popup-active' );
+				} );
 			} );
-		} );
 	}
 
 	/**
