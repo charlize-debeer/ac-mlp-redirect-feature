@@ -88,15 +88,12 @@
     -webkit-align-items: center; /* Safari 7.0+ */
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 14px 15px 14px 15px;
 }
 
-.ac-geo-popup .ac-geo-popup-redirect-flag {
-    margin-right: 9px;
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    display: inline-block;
+.ac-geo-popup .ac-geo-popup-redirect-flag img {
+    width: 40px;
 }
 
 .ac-geo-popup .redirect-to,
