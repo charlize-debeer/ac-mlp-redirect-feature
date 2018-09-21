@@ -27,6 +27,11 @@ class Redirect extends BasePlugin {
 	protected $headers = [];
 
 	/**
+	 * @var string
+	 */
+	protected $debug_header_country_code = 'http_x_ac_debug_country_code';
+
+	/**
 	 * Redirect constructor.
 	 */
 	public function __construct() {
@@ -84,7 +89,6 @@ class Redirect extends BasePlugin {
 
 		if ( ! file_exists( $located ) ) {
 			_doing_it_wrong( __FUNCTION__, sprintf( ' <code>%s </code> does not exist . ', esc_html( $located ) ), esc_html( self::VERSION ) );
-
 			return;
 		}
 
@@ -156,7 +160,9 @@ class Redirect extends BasePlugin {
 	 * @return string
 	 */
 	protected function get_debug_country_code() :? string {
-		return ( ! empty( $this->headers['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) ) ? strtolower( $this->headers['HTTP_X_AC_DEBUG_COUNTRY_CODE'] ) : null;
+		return ( ! empty( $this->headers[ $this->debug_header_country_code ] ) )
+			? strtolower( $this->headers[ $this->debug_header_country_code ] )
+			: null;
 	}
 
 }
