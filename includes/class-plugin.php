@@ -73,7 +73,6 @@ final class Plugin {
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-
 	}
 
 	/**
@@ -87,6 +86,17 @@ final class Plugin {
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Show a notice is MLP V.3 is not active on the site.
+	 */
+	public function show_mlp_required_notice() : void {
+		?>
+		<div class="notice notice-error is-dismissible">
+			<p><?php echo esc_html_e( 'MultilingualPress V.3 is a depenency of the AC Geo Redirect plugin. Please make sure it\'s installed and activated.' ); ?></p>
+		</div>
+		<?php
 	}
 
 	/**
@@ -109,7 +119,13 @@ final class Plugin {
 	/**
 	 * Add translations. You can call other hooks here.
 	 */
-	public function init() {
+	public function init() : void {
+		if ( ! function_exists( 'Inpsyde\MultilingualPress\currentSiteLocale' ) ) {
+			add_action( 'network_admin_notices', [ $this, 'show_mlp_required_notice' ] );
+			add_action( 'admin_notices', [ $this, 'show_mlp_required_notice' ] );
+			return;
+		}
+
 		load_plugin_textdomain( $this->plugin_slug, false, basename( $this->plugin_path ) . '/languages/' );
 
 		Redirect::get_instance();
@@ -149,7 +165,7 @@ final class Plugin {
 	/**
 	 * Enqueue the scripts
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts() : void {
 		wp_enqueue_script(
 			$this->plugin_slug . '-script',
 			$this->plugin_url . $this->main_js_file,
@@ -207,7 +223,7 @@ final class Plugin {
 	 *
 	 * @return null|string
 	 */
-	protected function get_lang_code_from_locale( $locale = null ) {
+	protected function get_lang_code_from_locale( string $locale = null ) :? string {
 		if ( null === $locale ) {
 			return null;
 		}
@@ -256,14 +272,14 @@ final class Plugin {
 	 *
 	 * @return string
 	 */
-	protected function remove_protocoll( $url ) {
+	protected function remove_protocoll( string $url ) : string {
 		return preg_replace( '/http(s)?:\/\//', '', $url );
 	}
 
 	/**
 	 * Register and enqueue stylesheets.
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles() : void {
 		wp_enqueue_style(
 			$this->plugin_slug . '-style',
 			$this->plugin_url . $this->main_css_file,
@@ -282,7 +298,7 @@ final class Plugin {
 	 *
 	 * @return string
 	 */
-	protected function get_asset_last_modified_time( $relative_path ) : string {
+	protected function get_asset_last_modified_time( string $relative_path ) : string {
 		return date( 'YmdHi', filemtime( $this->plugin_path . $relative_path ) );
 	}
 

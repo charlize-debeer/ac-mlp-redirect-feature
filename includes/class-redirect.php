@@ -84,7 +84,7 @@ class Redirect extends BasePlugin {
 	 *
 	 * @param string $template_name Template name.
 	 */
-	public function get_template( $template_name = 'popup.php' ) : void {
+	public function get_template( string $template_name = 'popup.php' ) : void {
 		$located = $this->locate_template( $template_name );
 
 		if ( ! file_exists( $located ) ) {
