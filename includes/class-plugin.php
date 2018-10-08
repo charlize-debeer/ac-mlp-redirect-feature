@@ -61,6 +61,11 @@ final class Plugin {
 	private $main_css_file = '/assets/css/ac-geo-redirect.css';
 
 	/**
+	 * @var T10ns
+	 */
+	protected $t10ns;
+
+	/**
 	 * Plugin constructor.
 	 */
 	private function __construct() {
@@ -73,6 +78,10 @@ final class Plugin {
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+
+		$this->t10ns = T10ns::get_instance();
+
+		Redirect::get_instance();
 	}
 
 	/**
@@ -123,16 +132,11 @@ final class Plugin {
 		if ( ! function_exists( 'Inpsyde\MultilingualPress\currentSiteLocale' ) ) {
 			add_action( 'network_admin_notices', [ $this, 'show_mlp_required_notice' ] );
 			add_action( 'admin_notices', [ $this, 'show_mlp_required_notice' ] );
+
 			return;
 		}
 
 		load_plugin_textdomain( $this->plugin_slug, false, basename( $this->plugin_path ) . '/languages/' );
-
-		Redirect::get_instance();
-
-		if ( is_admin() ) {
-			AdminSettings::get_instance();
-		}
 	}
 
 	/**
@@ -239,11 +243,10 @@ final class Plugin {
 	protected function get_assigned_languages() : array {
 		try {
 			$assigned_languages = [];
-			$locale = MultilingualPress\currentSiteLocale();
 
 			foreach ( MultiLingualPress\assignedLanguages() as $site_id => $press_language ) {
 				$lng_code = $this->get_lang_code_from_locale( $press_language->locale() );
-				$region = \Locale::getDisplayRegion( $press_language->locale(), $locale );
+				$region = \Locale::getDisplayRegion( $press_language->locale(), $press_language->locale() );
 
 				$assigned_languages[ $lng_code ] = [
 					'locale'      => $press_language->locale(),
@@ -252,11 +255,7 @@ final class Plugin {
 					'id'          => $site_id,
 					'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
 					'url'         => get_site_url( $site_id ),
-					't10ns'       => get_option( 'agr_options' ) ?: [
-						'header'    => esc_html__( "Hi! It seems like you're in", 'ac-geo-redirect' ),
-						'takeMeTo'  => esc_html__( 'Go to', 'ac-geo-redirect' ),
-						'remainOn'  => esc_html__( 'Stay at', 'ac-geo-redirect' ),
-					],
+					't10ns'       => $this->t10ns->get_t10ns( $press_language->locale() ),
 				];
 			}
 
