@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AC Geo Redirect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-21 14:32+0000\n"
+"POT-Creation-Date: 2018-10-08 07:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -13,39 +13,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/"
-
-#: includes/class-plugin.php:255
-msgid "Hi! It seems like you're in"
-msgstr ""
-
-#: includes/class-plugin.php:256
-msgid "Go to"
-msgstr ""
-
-#: includes/class-plugin.php:257
-msgid "Stay at"
-msgstr ""
-
-#: includes/class-adminsettings.php:107
-msgid "AC Geo Redirect Settings"
-msgstr ""
-
-#: includes/class-adminsettings.php:109
-msgid "Header:"
-msgstr ""
-
-#: includes/class-adminsettings.php:110
-msgid "Take me to:"
-msgstr ""
-
-#: includes/class-adminsettings.php:111
-msgid "Remain on page:"
-msgstr ""
-
-#: includes/class-adminsettings.php:124 includes/class-adminsettings.php:131
-#: includes/class-adminsettings.php:138 includes/class-adminsettings.php:145
-msgid "Write text here"
-msgstr ""
 
 #. Name of the plugin
 msgid "AC Geo Redirect"

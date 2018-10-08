@@ -16,6 +16,31 @@ Chrome extension -> https://chrome.google.com/webstore/detail/modheader/idgpnmon
 
 Most of the hooks can be found in the Redirect class. It's pretty much possible to override all of the settings and/or data that figures out which site to redirect to etc. 
 
+## Translations
+
+If the visitor is shown the prompt it will mean that she is (we assume) not in the country of the current site. She should therefore not be show a message in the locale of the current site.
+
+For example: If I visit angrycreative.se from the UK, I should see a popup suggesing I might wish to visit angrycreative.co.uk. If angrycreative.se is in swedish then the message I get (which assumes that I reside in the UK) should be in the en_UK locale.
+
+This is why we cannot handle t10ns as we normally would in WordPress. The locale for the current site will not match (again, we assume) the locale for the visitor who should see the popup.
+
+If you need to change the t10ns, which are intentionally kept short, the `ac_geo_redirect_t10ns` in the `T10ns` class is available for this purpose.`
+
+There are 3 t10ns to change and where a t10n is not found we revert always to the `en_US` translation.
+
+```
+'en_US' => [
+	'header'   => "Hi! It seems like you're in",
+	'takeMeTo' => 'Go to',
+	'remainOn' => 'Stay at',
+],
+'sv_SE' => [
+	'header'   => 'Hej! Vi tror att du befinner dig i',
+	'takeMeTo' => 'Gå till',
+	'remainOn' => 'Stanna på',
+],
+```
+
 ### How to
 
 1. Install Multilingualpress 3.
