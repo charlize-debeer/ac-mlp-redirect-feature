@@ -4,7 +4,7 @@ This is a plugin to make geo redirect happen when visiting a site and a site in 
 
 You'll also need to make sure the the correct headers are being sent. These will either be: `x-geoip-country` for NGINX or `cf-ipcountry` for Cloudflare.
 
-**You must ask Toni to configure the headers for the site in order for this plugin to work at all!!!** 
+**You must ask Toni to configure the headers for the site in order for this plugin to work at all! The above mentioned headers will only work on production, since staging environment doesn't have any location unfortunately. ** 
 
 ## Testing
 
