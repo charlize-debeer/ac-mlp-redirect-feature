@@ -4,7 +4,7 @@ This is a plugin to make geo redirect happen when visiting a site and a site in 
 
 You'll also need to make sure the the correct headers are being sent. These will either be: `x-geoip-country` for NGINX or `cf-ipcountry` for Cloudflare.
 
-**You must ask Toni to configure the headers for the site in order for this plugin to work at all! The above mentioned headers will only work on production, since staging environment doesn't have any location unfortunately. ** 
+**You must ask Toni to configure the headers for the site in order for this plugin to work at all! The above mentioned headers will only work on production, since staging environment doesn't have any location unfortunately. **
 
 ## Testing
 
@@ -14,7 +14,7 @@ Chrome extension -> https://chrome.google.com/webstore/detail/modheader/idgpnmon
 
 ## Hooks & Filters
 
-Most of the hooks can be found in the Redirect class. It's pretty much possible to override all of the settings and/or data that figures out which site to redirect to etc. 
+Most of the hooks can be found in the Redirect class. It's pretty much possible to override all of the settings and/or data that figures out which site to redirect to etc.
 
 ## Translations
 
@@ -48,7 +48,7 @@ There are 3 t10ns to change and where a t10n is not found we revert always to th
 3. The settings for the popup are found under Settings->Ac Geo Redirect
 4. :heart: that's it
 
-**OBS!** Ac Geo Redirect plugin is dependent on Multilingualpress 3 which is not currently available. Ask Samuel for help in acquiring a copy! 
+**OBS!** Ac Geo Redirect plugin is dependent on Multilingualpress 3 which is not currently available. Ask Samuel for help in acquiring a copy!
 
 ### Tests
 

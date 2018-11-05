@@ -16,7 +16,7 @@ final class Plugin {
 	 *
 	 * @var string
 	 */
-	private const VERSION = '1.0.0';
+	private const VERSION = '1.0.1';
 
 	/**
 	 * Plugin instance.
@@ -114,14 +114,20 @@ final class Plugin {
 	 * @param string $classname Name of class.
 	 */
 	public function autoload( $classname ) : void {
-		$classname = explode( '\\', $classname );
-		$classfile = sprintf( '%sclass-%s.php',
-			plugin_dir_path( __FILE__ ),
-			str_replace( '_', '-', strtolower( end( $classname ) ) )
-		);
+		$class = explode( '\\', $classname );
+		if ( 'Ac_Geo_Redirect' === $class[0] ) {
+			$sub_dir = ( count( $class ) > 2 ) ? '/' . $class[1] : '';
 
-		if ( file_exists( $classfile ) ) {
-			require $classfile;
+			$classfile = sprintf(
+				'%sincludes%s/class-%s.php',
+				plugin_dir_path( __DIR__ ),
+				str_replace( '_', '-', strtolower( $sub_dir ) ),
+				str_replace( '_', '-', strtolower( end( $class ) ) )
+			);
+
+			if ( file_exists( $classfile ) ) {
+				require $classfile;
+			}
 		}
 	}
 
