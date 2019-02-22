@@ -130,8 +130,8 @@ class Redirect extends BasePlugin {
 	/**
 	 * @return null|string
 	 */
-	protected function get_country_code() :? string {
-		$header = ( defined( 'AC_GEO_REDIRECT_HEADER' ) ) ? AC_GEO_REDIRECT_HEADER : 'x-geoip-country';
+	public function get_country_code() :? string {
+		$header = ( defined( 'AC_GEO_REDIRECT_HEADER' ) ) ? AC_GEO_REDIRECT_HEADER : 'x-country-code';
 		$header = strtolower( apply_filters( 'ac_geo_redirect_header', $header ) );
 		$code   = $this->get_header( $header );
 
