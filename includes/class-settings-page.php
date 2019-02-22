@@ -22,7 +22,7 @@ final class Settings_Page {
 	 */
 	public static function get_instance() : Settings_Page {
 		if ( null === self::$instance ) {
-			self::$instance = new self;
+			self::$instance = new self();
 		}
 
 		return self::$instance;
@@ -36,7 +36,8 @@ final class Settings_Page {
 			__( 'Geo IP debug', 'ac-geo-redirect' ),
 			__( 'Geo IP debug', 'ac-geo-redirect' ),
 			'manage-options',
-			'geo-ip-debug.php', [
+			'geo-ip-debug.php',
+			[
 				$this,
 				'render_options_page',
 			]
@@ -47,11 +48,9 @@ final class Settings_Page {
 	 * Render the options page.
 	 */
 	public function render_options_page() {
-		$redirect = Redirect::get_instance();
+		$redirect     = Redirect::get_instance();
 		$country_code = $redirect->get_country_code();
-
-		$header = $redirect->get_header( $country_code );
-		var_dump($header);
+		$header       = $redirect->get_header( $country_code );
 		?>
 
 		<div class="wrap">
@@ -67,7 +66,8 @@ final class Settings_Page {
 			</p>
 
 			<p>
-				<?php if ( defined( 'AC_GEO_REDIRECT_HEADER' ) ) :
+				<?php
+				if ( defined( 'AC_GEO_REDIRECT_HEADER' ) ) :
 					/* translators: %s the value of the constant: AC_GEO_REDIRECT_HEADER */
 					printf( esc_html__( 'The header was defined via the AC_GEO_REDIRECT_HEADER constant as: %s', 'ac-geo-redirect' ), esc_html( AC_GEO_REDIRECT_HEADER ) );
 				endif;
@@ -84,6 +84,6 @@ final class Settings_Page {
 				<?php endforeach; ?>
 			</ul>
 		</div>
-	<?php
+		<?php
 	}
 }
