@@ -70,6 +70,10 @@ class Redirect extends BasePlugin {
 		$this->headers = $headers;
 	}
 
+	public function get_headers() : array {
+		return $this->headers;
+	}
+
 	/**
 	 * Output Locale if the headers are set.
 	 *
@@ -150,7 +154,7 @@ class Redirect extends BasePlugin {
 	 *
 	 * @return null|string
 	 */
-	protected function get_header( string $header ) :? string {
+	public function get_header( string $header = null ) :? string {
 		return ( ! empty( $this->headers[ $header ] ) ) ? $this->headers[ $header ] : null;
 	}
 
