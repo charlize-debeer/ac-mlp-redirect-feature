@@ -82,6 +82,7 @@ final class Plugin {
 		$this->t10ns = T10ns::get_instance();
 
 		Redirect::get_instance();
+		Settings_Page::get_instance();
 	}
 
 	/**
