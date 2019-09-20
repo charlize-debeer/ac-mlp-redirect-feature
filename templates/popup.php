@@ -16,7 +16,7 @@
 			<section>
 
 				<header>
-					<img class="ac-geo-popup-icon" src="<?php echo esc_url( apply_filters( 'ac_geo_redirect_icon', \Ac_Geo_Redirect\Plugin::get_instance()->get_url() . '/assets/images/map.svg' ) ); ?>" alt="Map Icon">
+					<img class="ac-geo-popup-icon" src="<?php echo esc_url( apply_filters( 'ac_ge_redirect_header_image', \Ac_Geo_Redirect\Plugin::get_instance()->get_url() . '/assets/images/map.svg' ) ); ?>" alt="Map Icon">
 
 					<h3 class="ac-geo-popup-header"></h3>
 				</header>
