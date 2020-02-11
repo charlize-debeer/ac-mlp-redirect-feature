@@ -2,30 +2,13 @@
 
 namespace Ac_Geo_Redirect;
 
-final class Settings_Page {
-
-	/**
-	 * @var null|self
-	 */
-	protected static $instance = null;
+class Settings_Page {
 
 	/**
 	 * Settings_Page constructor.
 	 */
-	private function __construct() {
+	public function init() {
 		add_action( 'admin_menu', [ $this, 'add_menu_page' ] );
-	}
-
-	/**
-	 * Get singleton instance
-	 * @return Settings_Page
-	 */
-	public static function get_instance() : Settings_Page {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
 	}
 
 	/**
@@ -50,7 +33,6 @@ final class Settings_Page {
 	public function render_options_page() {
 		$redirect     = Redirect::get_instance();
 		$country_code = $redirect->get_country_code();
-		$header       = $redirect->get_header( $country_code );
 		?>
 
 		<div class="wrap">

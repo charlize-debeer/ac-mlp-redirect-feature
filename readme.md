@@ -16,7 +16,9 @@ Fix for "Hi, it seems like you're the United States" for visitors from countries
 
 #### New
 
-Added new `AC_GEO_DEFAULT_SITE_ID` constant as a way to specify the default site via site ID (aka blog ID) instead of using the `ac_geo_redirect_default_locale` filter.
+Now compatible with full-page cache!
+
+Use MLP's `hreflang: X-default` setting to grab a default locale for the current site (blog).
 
 New `ac_geo_redirect_default_t10n_locale` filter to define the default translations to use if the site is not found on the network.
 

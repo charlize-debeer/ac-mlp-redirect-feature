@@ -2,32 +2,7 @@
 
 namespace Ac_Geo_Redirect;
 
-final class T10ns {
-
-	/**
-	 * T10ns instance.
-	 *
-	 * @var null|self
-	 */
-	private static $instance = null;
-
-	/**
-	 * T10ns constructor.
-	 */
-	private function __construct() {}
-
-	/**
-	 * Get class instance
-	 *
-	 * @return T10ns
-	 */
-	public static function get_instance() : T10ns {
-		if ( null === self::$instance ) {
-			self::$instance = new self;
-		}
-
-		return self::$instance;
-	}
+class T10ns {
 
 	/**
 	 * Get localised text strings.
@@ -59,6 +34,10 @@ final class T10ns {
 		];
 
 		$t10ns = apply_filters( 'ac_geo_redirect_t10ns', $t10ns );
+
+		if ( ! $locale ) {
+			return $t10ns;
+		}
 
 		return array_key_exists( $locale, $t10ns ) ? $t10ns[ $locale ] : $t10ns['en_US'];
 	}

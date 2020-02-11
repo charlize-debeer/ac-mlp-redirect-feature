@@ -10,13 +10,6 @@ use Throwable;
 final class Plugin {
 
 	/**
-	 * Plugin instance.
-	 *
-	 * @var null|self
-	 */
-	private static $instance = null;
-
-	/**
 	 * URL to the plugin.
 	 *
 	 * @var string
@@ -57,36 +50,52 @@ final class Plugin {
 	protected $t10ns;
 
 	/**
-	 * Plugin constructor.
+	 * @var Country_Code
 	 */
-	private function __construct() {
-		spl_autoload_register( [ $this, 'autoload' ] );
+	protected $country_code;
 
+	/**
+	 * @var API
+	 */
+	protected $api;
+
+	/**
+	 * Plugin constructor.
+	 *
+	 * @param Settings_Page $settings_page
+	 * @param T10ns $t10ns
+	 * @param API $api
+	 * @param Template $template
+	 * @param Country_Code $country_code
+	 */
+	public function __construct(
+		Settings_Page $settings_page,
+		T10ns $t10ns,
+		API $api,
+		Template $template,
+		Country_Code $country_code
+	) {
+		$settings_page->init();
+		$api->init();
+		$template->init();
+
+		$this->api = $api;
+		$this->t10ns = $t10ns;
+		$this->country_code = $country_code;
 		$this->plugin_url  = dirname( untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 		$this->plugin_path = dirname( untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 
-		add_action( 'init', [ $this, 'init' ] );
-
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-
-		$this->t10ns = T10ns::get_instance();
-
-		Redirect::get_instance();
-		Settings_Page::get_instance();
+		$this->init();
 	}
 
-	/**
-	 * Get class instance
-	 *
-	 * @return Plugin
-	 */
-	public static function get_instance() : Plugin {
-		if ( null === self::$instance ) {
-			self::$instance = new self;
-		}
+	protected function init() {
+		add_action( 'init', [ $this, 'maybe_show_notices' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+	}
 
-		return self::$instance;
+	public function get_country_code() : Country_Code {
+		return $this->country_code;
 	}
 
 	/**
@@ -95,38 +104,15 @@ final class Plugin {
 	public function show_mlp_required_notice() : void {
 		?>
 		<div class="notice notice-error is-dismissible">
-			<p><?php echo esc_html_e( 'MultilingualPress V.3 is a depenency of the AC Geo Redirect plugin. Please make sure it\'s installed and activated.' ); ?></p>
+			<p><?php echo esc_html_e( 'MultilingualPress V.3 is a depenency of the AC Geo Redirect plugin. Please make sure it\'s installed and activated.', 'ac-geo-redirect' ); ?></p>
 		</div>
 		<?php
 	}
 
 	/**
-	 * Autoload class files function
-	 *
-	 * @param string $classname Name of class.
-	 */
-	public function autoload( $classname ) : void {
-		$class = explode( '\\', $classname );
-		if ( 'Ac_Geo_Redirect' === $class[0] ) {
-			$sub_dir = ( count( $class ) > 2 ) ? '/' . $class[1] : '';
-
-			$classfile = sprintf(
-				'%sincludes%s/class-%s.php',
-				plugin_dir_path( __DIR__ ),
-				str_replace( '_', '-', strtolower( $sub_dir ) ),
-				str_replace( '_', '-', strtolower( end( $class ) ) )
-			);
-
-			if ( file_exists( $classfile ) ) {
-				require $classfile;
-			}
-		}
-	}
-
-	/**
 	 * Add translations. You can call other hooks here.
 	 */
-	public function init() : void {
+	public function maybe_show_notices() : void {
 		if ( ! function_exists( 'Inpsyde\MultilingualPress\currentSiteLocale' ) ) {
 			add_action( 'network_admin_notices', [ $this, 'show_mlp_required_notice' ] );
 			add_action( 'admin_notices', [ $this, 'show_mlp_required_notice' ] );
@@ -164,7 +150,16 @@ final class Plugin {
 		return $this->plugin_slug;
 	}
 
-	protected function get_default_locale() {
+	/**
+	 * Get the default locale for a site (blog) on a network.
+	 *
+	 * This uses MLP's hreflang: X-default setting that is found
+	 * in the network setting for a site (blog) as the default.
+	 *
+	 * @return string
+	 * @throws NonexistentTable
+	 */
+	protected function get_default_locale() : string {
 		$mlp_settings   = get_site_option( 'multilingualpress_site_settings', true );
 		$blog_id        = get_current_blog_id();
 		$default_locale = apply_filters( 'ac_geo_redirect_default_locale', 'us' );
@@ -203,10 +198,12 @@ final class Plugin {
 				'ac-geo-redirect-script',
 				'AcGeoRedirect',
 				[
+					'APIURL'          => '/wp-json/' . $this->api->get_namespace(),
 					'currentBlogData' => $this->get_current_blog_data(),
 					'siteMap'         => $this->get_assigned_languages(),
 					'defaultLocale'   => $this->get_default_locale(),
-					'redirectLocale'  => Redirect::get_instance()->get_locale(),
+					'redirectLocale'  => $this->country_code->get_locale(),
+					't10ns'           => $this->t10ns->get_t10ns(),
 					'defaultT10ns'    => $this->t10ns->get_t10ns( apply_filters( 'ac_geo_redirect_default_t10n_locale', 'en_US' ) ),
 				]
 			);
@@ -238,14 +235,17 @@ final class Plugin {
 		$locale   = MultilingualPress\currentSiteLocale();
 		$lng_code = $this->get_lang_code_from_locale( $locale );
 
-		return apply_filters( 'ac_geo_redirect_current_blog_data', [
-			'id'          => (int) get_current_blog_id(),
-			'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
-			'lang'        => $lng_code,
-			'countryCode' => $lng_code,
-			'locale'      => $locale,
-			'region'      => Locale::getDisplayRegion( $locale ),
-		] );
+		return apply_filters(
+			'ac_geo_redirect_current_blog_data',
+			[
+				'id'          => (int) get_current_blog_id(),
+				'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
+				'lang'        => $lng_code,
+				'countryCode' => $lng_code,
+				'locale'      => $locale,
+				'region'      => Locale::getDisplayRegion( $locale ),
+			]
+		);
 	}
 
 	/**
@@ -273,7 +273,7 @@ final class Plugin {
 
 		foreach ( MultiLingualPress\assignedLanguages() as $site_id => $press_language ) {
 			$lng_code = $this->get_lang_code_from_locale( $press_language->locale() );
-			$region = Locale::getDisplayRegion( $press_language->locale(), $press_language->locale() );
+			$region   = Locale::getDisplayRegion( $press_language->locale(), $press_language->locale() );
 
 			$assigned_languages[ $lng_code ] = [
 				'locale'      => $press_language->locale(),
