@@ -19,7 +19,7 @@ class BasePlugin {
 	 *
 	 * @var string
 	 */
-	protected const VERSION = '1.0.2';
+	protected const VERSION = '1.1.0';
 
 	/**
 	 * URL to the plugin.

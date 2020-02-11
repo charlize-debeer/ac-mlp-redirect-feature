@@ -1,17 +1,9 @@
 <?php
-/**
- * Class Redirect.
- *
- * @package Ac_Geo_Redirect.
- */
 
 namespace Ac_Geo_Redirect;
 
-/**
- * Class Plugin
- *
- * @package Ac_Geo_Redirect
- */
+use Inpsyde\MultilingualPress\Core\Admin\SiteSettingsRepository;
+
 class Redirect extends BasePlugin {
 
 	/**
@@ -34,7 +26,7 @@ class Redirect extends BasePlugin {
 	/**
 	 * Redirect constructor.
 	 */
-	public function __construct() {
+	protected function __construct() {
 		parent::__construct();
 
 		$this->set_headers();
@@ -168,5 +160,4 @@ class Redirect extends BasePlugin {
 			? strtolower( $this->headers[ $this->debug_header_country_code ] )
 			: null;
 	}
-
 }

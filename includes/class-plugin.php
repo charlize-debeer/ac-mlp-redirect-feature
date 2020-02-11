@@ -3,20 +3,11 @@
 namespace Ac_Geo_Redirect;
 
 use Inpsyde\MultilingualPress;
+use Inpsyde\MultilingualPress\Framework\Database\Exception\NonexistentTable;
+use Locale;
+use Throwable;
 
-/**
- * Class Plugin
- *
- * @package Ac_Geo_Redirect
- */
 final class Plugin {
-
-	/**
-	 * Plugin version.
-	 *
-	 * @var string
-	 */
-	private const VERSION = '1.0.1';
 
 	/**
 	 * Plugin instance.
@@ -173,6 +164,28 @@ final class Plugin {
 		return $this->plugin_slug;
 	}
 
+	protected function get_default_locale() {
+		$mlp_settings   = get_site_option( 'multilingualpress_site_settings', true );
+		$blog_id        = get_current_blog_id();
+		$default_locale = apply_filters( 'ac_geo_redirect_default_locale', 'us' );
+
+		if ( ! array_key_exists( $blog_id, $mlp_settings ) ) {
+			return $default_locale;
+		}
+
+		$mlp_data = $mlp_settings[ $blog_id ];
+		if ( empty( $mlp_data['multilingualpress_xdefault'] ) ) {
+			return $default_locale;
+		}
+
+		$locale = MultilingualPress\siteLocale( $mlp_data['multilingualpress_xdefault'] );
+		if ( empty( $locale ) ) {
+			return $default_locale;
+		}
+
+		return apply_filters( 'ac_geo_redirect_default_locale', $this->get_lang_code_from_locale( $locale ) );
+	}
+
 	/**
 	 * Enqueue the scripts
 	 */
@@ -186,45 +199,53 @@ final class Plugin {
 		);
 
 		try {
-			wp_localize_script( 'ac-geo-redirect-script', 'AcGeoRedirect', [
-				'currentBlogData' => $this->get_current_blog_data(),
-				'siteMap'         => $this->get_assigned_languages(),
-				'defaultLocale'   => apply_filters( 'ac_geo_redirect_default_locale', 'us' ),
-				'redirectLocale'  => Redirect::get_instance()->get_locale(),
-			] );
-		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
-			add_action( 'admin_notices', function() use ( $e ) {
-				?>
-				<div class="notice notice-error is-dismissible">
-					<p><?php echo esc_html( $e->getMessage() ); ?></p>
-				</div>
-				<?php
-			} );
+			wp_localize_script(
+				'ac-geo-redirect-script',
+				'AcGeoRedirect',
+				[
+					'currentBlogData' => $this->get_current_blog_data(),
+					'siteMap'         => $this->get_assigned_languages(),
+					'defaultLocale'   => $this->get_default_locale(),
+					'redirectLocale'  => Redirect::get_instance()->get_locale(),
+					'defaultT10ns'    => $this->t10ns->get_t10ns( apply_filters( 'ac_geo_redirect_default_t10n_locale', 'en_US' ) ),
+				]
+			);
+		} catch ( NonexistentTable $e ) {
+			add_action(
+				'admin_notices',
+				function() use ( $e ) {
+					$this->show_admin_notices( $e );
+				}
+			);
 		}
+	}
+
+	protected function show_admin_notices( Throwable $e ) {
+		?>
+		<div class="notice notice-error is-dismissible">
+			<p><?php echo esc_html( $e->getMessage() ); ?></p>
+		</div>
+		<?php
 	}
 
 	/**
 	 * Get array of data for the current blog.
-
+	 *
 	 * @return array
-	 * @throws MultilingualPress\Framework\Database\Exception\NonexistentTable
+	 * @throws NonexistentTable
 	 */
 	public function get_current_blog_data() : array {
-		try {
-			$locale   = MultilingualPress\currentSiteLocale();
-			$lng_code = $this->get_lang_code_from_locale( $locale );
+		$locale   = MultilingualPress\currentSiteLocale();
+		$lng_code = $this->get_lang_code_from_locale( $locale );
 
-			return apply_filters( 'ac_geo_redirect_current_blog_data', [
-				'id'          => (int) get_current_blog_id(),
-				'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
-				'lang'        => $lng_code,
-				'countryCode' => $lng_code,
-				'locale'      => $locale,
-				'region'      => \Locale::getDisplayRegion( $locale ),
-			] );
-		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
-			throw $e;
-		}
+		return apply_filters( 'ac_geo_redirect_current_blog_data', [
+			'id'          => (int) get_current_blog_id(),
+			'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
+			'lang'        => $lng_code,
+			'countryCode' => $lng_code,
+			'locale'      => $locale,
+			'region'      => Locale::getDisplayRegion( $locale ),
+		] );
 	}
 
 	/**
@@ -245,31 +266,27 @@ final class Plugin {
 
 	/**
 	 * @return array
-	 * @throws MultilingualPress\Framework\Database\Exception\NonexistentTable
+	 * @throws NonexistentTable
 	 */
 	protected function get_assigned_languages() : array {
-		try {
-			$assigned_languages = [];
+		$assigned_languages = [];
 
-			foreach ( MultiLingualPress\assignedLanguages() as $site_id => $press_language ) {
-				$lng_code = $this->get_lang_code_from_locale( $press_language->locale() );
-				$region = \Locale::getDisplayRegion( $press_language->locale(), $press_language->locale() );
+		foreach ( MultiLingualPress\assignedLanguages() as $site_id => $press_language ) {
+			$lng_code = $this->get_lang_code_from_locale( $press_language->locale() );
+			$region = Locale::getDisplayRegion( $press_language->locale(), $press_language->locale() );
 
-				$assigned_languages[ $lng_code ] = [
-					'locale'      => $press_language->locale(),
-					'countryCode' => $lng_code,
-					'region'      => $region,
-					'id'          => $site_id,
-					'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
-					'url'         => get_site_url( $site_id ),
-					't10ns'       => $this->t10ns->get_t10ns( $press_language->locale() ),
-				];
-			}
-
-			return apply_filters( 'ac_geo_redirect_assigned_languages', $assigned_languages );
-		} catch ( MultilingualPress\Framework\Database\Exception\NonexistentTable $e ) {
-			throw $e;
+			$assigned_languages[ $lng_code ] = [
+				'locale'      => $press_language->locale(),
+				'countryCode' => $lng_code,
+				'region'      => $region,
+				'id'          => $site_id,
+				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
+				'url'         => get_site_url( $site_id ),
+				't10ns'       => $this->t10ns->get_t10ns( $press_language->locale() ),
+			];
 		}
+
+		return apply_filters( 'ac_geo_redirect_assigned_languages', $assigned_languages );
 	}
 
 	/**
@@ -308,5 +325,4 @@ final class Plugin {
 	protected function get_asset_last_modified_time( string $relative_path ) : string {
 		return date( 'YmdHi', filemtime( $this->plugin_path . $relative_path ) );
 	}
-
 }
