@@ -1,7 +1,9 @@
 {
   "name": "ac-components/ac-geo-redirect",
   "description": "A plugin to fix geo redirect for multilingualpress",
-  "keywords": ["WordPress"],
+  "keywords": [
+    "WordPress"
+  ],
   "homepage": "https://angrycreative.com",
   "authors": [
     {
@@ -29,24 +31,27 @@
     "wp-coding-standards/wpcs": "*"
   },
   "autoload": {
-      "psr-4": {
-        "Ac_Geo_Redirect\\": "includes"
-      }
-    },
-    "scripts": {
-      "style:check": "./vendor/bin/phpcs --extensions=php .",
-      "style:fix": "./vendor/bin/phpcbf --extensions=php .",
-      "lint": [
-        "@style:check"
-      ],
-      "test:unit": "./vendor/bin/phpunit",
-      "test:setup": "tests/bin/install-wp-tests.sh wp-ac-geo-redirect-test",
-      "test": [
-        "@test:unit"
-      ],
-      "commit": [
-        "@lint",
-        "@test"
-      ]
+    "psr-4": {
+      "Ac_Geo_Redirect\\": "includes"
     }
+  },
+  "scripts": {
+    "style:check": "./vendor/bin/phpcs --extensions=php .",
+    "style:fix": "./vendor/bin/phpcbf --extensions=php .",
+    "lint": [
+      "@style:check"
+    ],
+    "test:unit": "./vendor/bin/phpunit",
+    "test:setup": "tests/bin/install-wp-tests.sh wp-ac-geo-redirect-test",
+    "test": [
+      "@test:unit"
+    ],
+    "commit": [
+      "@lint",
+      "@test"
+    ]
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
 }
