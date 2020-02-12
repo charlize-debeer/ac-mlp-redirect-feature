@@ -2,30 +2,13 @@
 
 namespace Ac_Geo_Redirect;
 
-final class Settings_Page {
-
-	/**
-	 * @var null|self
-	 */
-	protected static $instance = null;
+class SettingsPage {
 
 	/**
 	 * Settings_Page constructor.
 	 */
-	private function __construct() {
+	public function init() {
 		add_action( 'admin_menu', [ $this, 'add_menu_page' ] );
-	}
-
-	/**
-	 * Get singleton instance
-	 * @return Settings_Page
-	 */
-	public static function get_instance() : Settings_Page {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
 	}
 
 	/**
@@ -48,9 +31,7 @@ final class Settings_Page {
 	 * Render the options page.
 	 */
 	public function render_options_page() {
-		$redirect     = Redirect::get_instance();
-		$country_code = $redirect->get_country_code();
-		$header       = $redirect->get_header( $country_code );
+		$country_code = ac_geo_redirect_plugin()->get_country_code();
 		?>
 
 		<div class="wrap">
@@ -58,10 +39,10 @@ final class Settings_Page {
 
 			<h3><?php esc_html_e( 'Country code:', 'ac-geo-redirect' ); ?></h3>
 			<p>
-				<?php if ( ! $country_code ) : ?>
+				<?php if ( ! $country_code->get_country_code() ) : ?>
 					<?php esc_html_e( "We couldn't find a country code header set for this site. Please check that the correct headers are being sent via either NGINX or Cloudflare where appropriate.", 'ac-geo-redirect' ); ?>
 				<?php else : ?>
-					<strong><?php echo esc_html( $country_code ); ?></strong>
+					<strong><?php echo esc_html( $country_code->get_country_code() ); ?></strong>
 				<?php endif; ?>
 			</p>
 
@@ -79,7 +60,7 @@ final class Settings_Page {
 			<h3><?php esc_html_e( 'All request headers:', 'ac-geo-redirect' ); ?></h3>
 
 			<ul>
-				<?php foreach ( $redirect->get_headers() as $key => $value ) : ?>
+				<?php foreach ( $country_code->get_headers() as $key => $value ) : ?>
 					<li><strong><?php echo esc_html( $key ); ?>:</strong> <?php echo esc_html( $value ) . "\n"; ?></li>
 				<?php endforeach; ?>
 			</ul>

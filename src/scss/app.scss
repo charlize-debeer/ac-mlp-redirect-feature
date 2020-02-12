@@ -1,0 +1,118 @@
+.ac-geo-popup {
+	display: none;
+}
+
+.ac-geo-popup-active {
+	.ac-geo-popup {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		padding: 15px;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 9999;
+		-ms-overflow-style: -ms-autohiding-scrollbar; /* IE/Edge scrollbar fix */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.ac-geo-popup-inner {
+		text-align: center;
+		width: 95%;
+		max-width: 380px;
+		max-height: 100%;
+		margin: 0 auto;
+		overflow-y: auto;
+		background: rgba(255, 255, 255, .95);
+		box-shadow: 0 0 2px rgba(0, 0, 0, .2);
+		@media (min-width: 768px) {
+			max-width: 440px;
+		}
+	}
+
+	.ac-geo-popup-inner-text a {
+		text-decoration: none;
+	}
+}
+
+.ac-geo-popup {
+	.ac-geo-popup-sub-header-wrapper {
+		margin-top: 8px;
+		margin-bottom: 23px;
+	}
+
+	.ac-geo-popup-inner {
+		border-radius: 2px;
+		background-color: #ffffff;
+		padding: 40px 30px 50px;
+		@media (min-width: 768px) {
+			padding: 80px 70px;
+		}
+	}
+
+	.ac-geo-popup-icon {
+		width: 40px;
+		@media (min-width: 768px) {
+			width: 50px;
+		}
+	}
+
+	.ac-geo-popup-header {
+		font-size: 18px;
+		font-weight: 600;
+		line-height: 28px;
+		margin: 20px 0;
+		text-align: center;
+		color: #3a3a3a;
+		@media (min-width: 768px) {
+			font-size: 24px;
+			line-height: 32px;
+			margin-bottom: 40px;
+		}
+	}
+
+	.ac-geo-popup-redirect {
+		margin: 0 auto 15px;
+		text-align: center;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		a {
+			padding: 12px;
+			border-radius: 2px;
+			display: block;
+			font-size: 11px;
+			letter-spacing: 1px;
+			border: solid 1px #e5e5e5;
+			text-transform: uppercase;
+			@media (min-width: 768px) {
+				font-size: 13px;
+			}
+
+			&:hover {
+				text-decoration: none;
+			}
+		}
+	}
+
+	a.ac-geo-popup-remain-link,
+	a.ac-geo-popup-remain-link:hover {
+		color: #5483bf;
+	}
+
+	a.ac-geo-popup-redirect-link {
+		background: #5483bf;
+		color: white;
+	}
+
+	.redirect-to,
+	.remain-on {
+		white-space: nowrap;
+		overflow: hidden;
+		vertical-align: middle;
+	}
+}
