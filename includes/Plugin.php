@@ -88,12 +88,18 @@ final class Plugin {
 		$this->init();
 	}
 
-	protected function init() {
+	/*
+	 * Register actions
+	 */
+	protected function init() : void {
 		add_action( 'init', [ $this, 'maybe_show_notices' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 	}
 
+	/**
+	 * @return CountryCode
+	 */
 	public function get_country_code() : CountryCode {
 		return $this->country_code;
 	}
@@ -217,7 +223,12 @@ final class Plugin {
 		}
 	}
 
-	protected function show_admin_notices( Throwable $e ) {
+	/**
+     * Show an admin notice if an error is thrown.
+     *
+	 * @param Throwable $e
+	 */
+	protected function show_admin_notices( Throwable $e ) : void {
 		?>
 		<div class="notice notice-error is-dismissible">
 			<p><?php echo esc_html( $e->getMessage() ); ?></p>

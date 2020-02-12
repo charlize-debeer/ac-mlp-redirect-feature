@@ -20,7 +20,7 @@ Now compatible with full-page cache!
 
 Use MLP's `hreflang: X-default` setting to grab a default locale for the current site (blog).
 
-New `ac_geo_redirect_default_t10n_locale` filter to define the default translations to use if the site is not found on the network.
+New `ac_geo_redirect_default_t10n_locale` filter to define the default translations to use if the country code is not found on the network.
 
 ### Testing
 

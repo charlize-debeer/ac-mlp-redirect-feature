@@ -1,8 +1,7 @@
 /* global localStorage:Object, AcGeoRedirect:Object  */
 
 import 'promise-polyfill/src/polyfill';
-import { getCountryNameFromCode, localStorageExists, getCountryCode, getDefaultBlogData } from "./helpers";
-
+import { getCountryNameFromCode, localStorageExists, getCountryCode, getDefaultBlogData } from './helpers';
 
 jQuery( ( $ ) => {
 	/** @type {string} The local storage key */
@@ -88,6 +87,11 @@ jQuery( ( $ ) => {
 		} );
 	}
 
+	/**
+	 * Render the Popup with the correct content.
+	 *
+	 * @param { Object } Text strings.
+	 */
 	function render( { redirectBlogData, currentBlogData, region = '' } ) {
 		const $popup = $( '#ac-geo-popup' );
 		const $body = $( 'body' );
@@ -113,6 +117,9 @@ jQuery( ( $ ) => {
 			} );
 	}
 
+	/**
+	 * Show the popup where applicable.
+	 */
 	function init() {
 		if ( ! localStorageExists() ) {
 			return;
