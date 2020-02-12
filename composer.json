@@ -30,7 +30,7 @@
   },
   "autoload": {
       "psr-4": {
-        "Ac_Geo_Redirect\\Entity\\": "includes/Entity"
+        "Ac_Geo_Redirect\\": "includes"
       }
     },
     "scripts": {
