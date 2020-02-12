@@ -8,13 +8,15 @@ You'll also need to make sure the the correct headers are being sent. These will
 
 ## Changelog
 
-### 1.1.0
+### 2.0.0
 
 #### Bugfixes
 
-Fix for "Hi, it seems like you're the United States" for visitors from countries where a language does not exist on the network.
+Fix for "Hi, it seems like you're in the United States" for visitors from countries where a language does not exist on the network.
 
 #### New
+
+Total rewrite with ES6, Scss support AND composer autoloader! :tada:
 
 Now compatible with full-page cache!
 
