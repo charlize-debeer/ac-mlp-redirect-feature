@@ -23,7 +23,7 @@ class T10ns {
 			],
 			'sv_SE' => [
 				'header'   => 'Hej! Vi tror att du befinner dig i',
-				'takeMeTo' => 'Gå til',
+				'takeMeTo' => 'Gå till',
 				'remainOn' => 'Stanna på',
 			],
 			'no_NO' => [
