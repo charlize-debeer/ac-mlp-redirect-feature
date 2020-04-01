@@ -4,7 +4,7 @@
 Plugin Name: AC Geo Redirect
 Plugin URI: https://angrycreative.se
 Description: A GEO IP plugin for use with MultilingualPress V.3.
-Version: 2.0.1
+Version: 2.0.2
 Author: Angry Creatives
 Author URI: https://angrycreative.se
 License: GPL2
