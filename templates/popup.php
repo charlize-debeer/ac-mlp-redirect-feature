@@ -13,8 +13,7 @@
  * replace the text dynamically.
  */
 
-$image_url = apply_filters( 'ac_ge_redirect_header_image', ac_geo_redirect_plugin()->get_url() . '/assets/images/map.svg' );
-
+$image_url = apply_filters( 'ac_ge_redirect_header_image', ac_geo_redirect_plugin()->get_path() . '/assets/images/map.svg' );
 ?>
 
 <div id="ac-geo-popup" class="ac-geo-popup">
@@ -22,14 +21,11 @@ $image_url = apply_filters( 'ac_ge_redirect_header_image', ac_geo_redirect_plugi
 		<div class="ac-geo-popup-inner-text">
 			<section>
 				<header>
-					<img
-						class="ac-geo-popup-icon"
-						src="<?php echo esc_url( $image_url ); ?>"
-						alt="<?php esc_attr_e( 'Map Icon', 'ac-geo-redirect' ); ?>"
-					>
+					<div class="ac-geo-popup-icon">
+						<?php echo file_get_contents( $image_url ); ?>
+					</div>
 					<h3 class="ac-geo-popup-header"></h3>
 				</header>
-
 				<div class="ac-geo-popup-redirect">
 					<a href="<?php echo esc_url( home_url() ) ?>" class="ac-geo-popup-redirect-link">
 						<div class="ac-geo-popup-redirect-to redirect-to"></div>

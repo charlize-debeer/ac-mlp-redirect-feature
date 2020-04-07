@@ -53,9 +53,19 @@
 	}
 
 	.ac-geo-popup-icon {
-		width: 40px;
-		@media (min-width: 768px) {
-			width: 50px;
+		display: flex;
+		width: 100%;
+		flex-direction: row;
+		justify-content: center;
+
+		svg {
+			width: 40px;
+			height: 40px;
+
+			@media (min-width: 768px) {
+				width: 50px;
+				height: 50px;
+			}
 		}
 	}
 
@@ -111,8 +121,9 @@
 
 	.redirect-to,
 	.remain-on {
-		white-space: nowrap;
+		white-space: pre-wrap;
 		overflow: hidden;
 		vertical-align: middle;
+		word-break: break-word;
 	}
 }
