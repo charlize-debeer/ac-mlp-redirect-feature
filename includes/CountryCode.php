@@ -12,7 +12,7 @@ class CountryCode {
 	/**
 	 * @var string
 	 */
-	protected $debug_header_country_code = 'http_x_ac_debug_country_code';
+	protected $debug_header_country_code = 'x-ac-debug-country-code';
 
 	public function __construct() {
 		$this->set_headers();
@@ -72,7 +72,7 @@ class CountryCode {
 	}
 
 	/**
-	 * Get the debug country code. (Header: HTTP_X_AC_DEBUG_COUNTRY_CODE) if set.
+	 * Get the debug country code. (Header: x-ac-debug-country-code) if set.
 	 *
 	 * @return string
 	 */

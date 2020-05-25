@@ -8,6 +8,14 @@ You'll also need to make sure the the correct headers are being sent. These will
 
 ## Changelog
 
+### 2.0.3
+
+#### Bugfixes
+
+* Fixed incorrectly named function `strip_protocoll` to `strip_protocol`.
+* Changed debug request header to one that works with HTTP protocol. It's now `x-ac-debug-country-code`.
+* Fixed settings page and the REST endpoint to actually take into account the debug header if it's set.
+
 ### 2.0.0
 
 #### Bugfixes

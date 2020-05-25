@@ -250,7 +250,7 @@ final class Plugin {
 			'ac_geo_redirect_current_blog_data',
 			[
 				'id'          => (int) get_current_blog_id(),
-				'domain'      => $this->remove_protocoll( get_home_url( '' ) ),
+				'domain'      => $this->remove_protocol( get_home_url( '' ) ),
 				'lang'        => $lng_code,
 				'countryCode' => $lng_code,
 				'locale'      => $locale,
@@ -291,7 +291,7 @@ final class Plugin {
 				'countryCode' => $lng_code,
 				'region'      => $region,
 				'id'          => $site_id,
-				'domain'      => $this->remove_protocoll( get_site_url( $site_id, '' ) ),
+				'domain'      => $this->remove_protocol( get_site_url( $site_id, '' ) ),
 				'url'         => get_site_url( $site_id ),
 				't10ns'       => $this->t10ns->get_t10ns( $press_language->locale() ),
 			];
@@ -307,7 +307,7 @@ final class Plugin {
 	 *
 	 * @return string
 	 */
-	protected function remove_protocoll( string $url ) : string {
+	protected function remove_protocol( string $url ) : string {
 		return preg_replace( '/http(s)?:\/\//', '', $url );
 	}
 

@@ -23,7 +23,7 @@ class API {
 			$this->namespace,
 			'/get-country-code',
 			[
-				'methods'  => 'POST', // workaroud for cache!
+				'methods'  => 'POST', // workaround for cache!
 				'callback' => [ $this, 'get_country_code' ],
 			]
 		);
@@ -40,7 +40,7 @@ class API {
 	 */
 	public function get_country_code( WP_REST_Request $request ) : array {
 		return [
-			'code' => ac_geo_redirect_plugin()->get_country_code()->get_country_code(),
+			'code' => ac_geo_redirect_plugin()->get_country_code()->get_locale(),
 		];
 	}
 }
