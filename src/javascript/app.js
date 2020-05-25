@@ -34,8 +34,8 @@ jQuery( ( $ ) => {
 
 		if ( ! redirectLocale ) {
 			console.error(
-				'AcGeoRedirect.redirectLocale not set. (See class-redirect.php).',
-				'Did you add the debug header (http_x_ac_debug_country_code) or are the headers setup correctly for NGINX or cloudflare?',
+				'AcGeoRedirect.redirectLocale not set. (See Plugin.php).',
+				'Did you add the debug header (x-ac-debug-country-code) or are the headers setup correctly for NGINX or cloudflare?',
 				'See the readme for more info'
 			);
 

@@ -8,6 +8,14 @@ You'll also need to make sure the the correct headers are being sent. These will
 
 ## Changelog
 
+### 2.0.3
+
+#### Bugfixes
+
+* Fixed incorrectly named function `strip_protocoll` to `strip_protocol`.
+* Changed debug request header to one that works with HTTP protocol. It's now `x-ac-debug-country-code`.
+* Fixed settings page and the REST endpoint to actually take into account the debug header if it's set.
+
 ### 2.0.0
 
 #### Bugfixes
@@ -27,6 +35,7 @@ New `ac_geo_redirect_default_t10n_locale` filter to define the default translati
 ### Testing
 
 You can mock a country code by adding the header `x-country-code` and a country code, eg `us` or `fr`.
+On staging, test or live environment you need to use the debug code `x-ac-debug-country-code`.
 
 Chrome extension -> https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj?hl=en
 

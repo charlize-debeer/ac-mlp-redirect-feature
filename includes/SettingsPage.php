@@ -39,10 +39,10 @@ class SettingsPage {
 
 			<h3><?php esc_html_e( 'Country code:', 'ac-geo-redirect' ); ?></h3>
 			<p>
-				<?php if ( ! $country_code->get_country_code() ) : ?>
+				<?php if ( ! $country_code->get_locale() ) : ?>
 					<?php esc_html_e( "We couldn't find a country code header set for this site. Please check that the correct headers are being sent via either NGINX or Cloudflare where appropriate.", 'ac-geo-redirect' ); ?>
 				<?php else : ?>
-					<strong><?php echo esc_html( $country_code->get_country_code() ); ?></strong>
+					<strong><?php echo esc_html( $country_code->get_locale() ); ?></strong>
 				<?php endif; ?>
 			</p>
 
