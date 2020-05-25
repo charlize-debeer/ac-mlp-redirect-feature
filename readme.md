@@ -35,6 +35,7 @@ New `ac_geo_redirect_default_t10n_locale` filter to define the default translati
 ### Testing
 
 You can mock a country code by adding the header `x-country-code` and a country code, eg `us` or `fr`.
+On staging, test or live environment you need to use the debug code `x-ac-debug-country-code`.
 
 Chrome extension -> https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj?hl=en
 
